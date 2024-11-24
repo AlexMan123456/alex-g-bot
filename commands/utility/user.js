@@ -1,12 +1,24 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+
+async function execute(interaction){
+	const user = interaction.user
+	const member = interaction.member
+
+	const embed = new EmbedBuilder()
+		.setTitle(user.globalName)
+		.setAuthor({name: user.username})
+		.addFields(
+			{name: "Global name:", value: user.globalName},
+			{name: "Username:", value: user.username},
+			{name: "Joined server on:", value: String(member.joinedAt)}
+		)
+
+	await interaction.reply({embeds: [embed]})
+}
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('user')
 		.setDescription('Provides information about the user.'),
-	async execute(interaction) {
-		// interaction.user is the object representing the User who ran the command
-		// interaction.member is the GuildMember object, which represents the user in the specific guild
-		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
-	},
+	execute,
 };
