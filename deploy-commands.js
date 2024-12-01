@@ -1,5 +1,7 @@
 const { REST, Routes } = require('discord.js')
-require("dotenv").config()
+require("dotenv").config({
+	path: `${__dirname}/.env.private-server`
+})
 const fs = require('fs')
 const path = require('path')
 
