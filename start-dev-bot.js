@@ -2,7 +2,9 @@
 const fs = require("fs")
 const path = require("path")
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-require("dotenv").config()
+require("dotenv").config({
+	path: `${__dirname}/.env.development`
+})
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
