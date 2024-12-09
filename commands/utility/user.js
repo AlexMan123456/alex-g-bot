@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 
 const data = new SlashCommandBuilder()
 .setName('user')
@@ -21,8 +21,11 @@ async function execute(interaction){
 			{name: "Username:", value: user.username},
 			{name: "Joined server on:", value: String(member.joinedAt)}
 		)
-
-	await interaction.reply({embeds: [embed]})
+	try{
+		await interaction.reply({embeds: [embed]})
+	}catch(err){
+		await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+	}
 }
 
 module.exports = { data, execute };

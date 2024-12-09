@@ -26,11 +26,11 @@ async function execute(interaction){
         .addFields({name: "Details", value: suggestionDescription})
         .setTimestamp()
 
-    try {
+    try{
         const suggestionsChannel = await findSuggestionsChannel(interaction)
         await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
         await interaction.reply({embeds: [embed], flags: MessageFlags.Ephemeral})
-    } catch(err){
+    }catch(err){
         await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
     }
 }

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js")
+const { SlashCommandBuilder, MessageFlags } = require("discord.js")
 
 const data = new SlashCommandBuilder()
 .setName("echo")
@@ -10,7 +10,11 @@ const data = new SlashCommandBuilder()
 })
 
 async function execute(interaction){
-    await interaction.reply(interaction.options.getString("input"))
+    try{
+        await interaction.reply(interaction.options.getString("input"))
+    }catch(err){
+        await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+    }
 }
 
 module.exports = { data, execute }
