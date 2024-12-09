@@ -23,7 +23,7 @@ function findSuggestionsChannel(interaction){
     return interaction.guild.channels.fetch().then((data) => {
         const channels = [...data]
         for(const channel of channels){
-            if(channel[1].name === "suggestion"){
+            if(channel[1].name === "suggestions"){
                 return channel
             }
         }
