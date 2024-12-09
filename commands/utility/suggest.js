@@ -1,5 +1,21 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js")
 
+const data = new SlashCommandBuilder()
+.setName("suggest")
+.setDescription("Suggest a feature to be added to the bot")
+.addStringOption((option) => {
+    return option
+        .setName("title")
+        .setDescription("The title of your suggestion")
+        .setRequired(true)
+})
+.addStringOption((option) => {
+    return option
+        .setName("description")
+        .setDescription("Describe the main features of your suggestion")
+        .setRequired(true)
+})
+
 async function execute(interaction){
     const suggestionTitle = interaction.options.getString("title")
     const suggestionDescription = interaction.options.getString("description")
@@ -30,21 +46,4 @@ function findSuggestionsChannel(interaction){
     })
 }
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("suggest")
-        .setDescription("Suggest a feature to be added to the bot")
-        .addStringOption((option) => {
-            return option
-                .setName("title")
-                .setDescription("The title of your suggestion")
-                .setRequired(true)
-        })
-        .addStringOption((option) => {
-            return option
-                .setName("description")
-                .setDescription("Describe the main features of your suggestion")
-                .setRequired(true)
-        }),
-    execute
-}
+module.exports = { data, execute }

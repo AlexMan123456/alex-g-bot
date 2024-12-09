@@ -1,5 +1,14 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
+const data = new SlashCommandBuilder()
+.setName('user')
+.setDescription('Provides information about the user.')
+.addUserOption((option) => {
+	return option
+		.setName("user")
+		.setDescription("The username of the user to get information about")
+})
+
 async function execute(interaction){
 	const user = interaction.options.getUser("user") ?? interaction.user
 	const member = interaction.options.getMember("user") ?? interaction.member
@@ -16,14 +25,4 @@ async function execute(interaction){
 	await interaction.reply({embeds: [embed]})
 }
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('user')
-		.setDescription('Provides information about the user.')
-		.addUserOption((option) => {
-			return option
-				.setName("user")
-				.setDescription("The username of the user to get information about")
-		}),
-	execute,
-};
+module.exports = { data, execute };
