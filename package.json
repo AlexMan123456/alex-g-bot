@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "main": "node deploy-commands.js && node start-main-bot.js",
+    "main": "node deploy-commands-main.js && node start-main-bot.js",
     "dev": "node deploy-commands-dev.js && node start-dev-bot.js"
   },
   "keywords": [],
