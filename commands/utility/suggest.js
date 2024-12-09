@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js")
 
 async function execute(interaction){
     const suggestionTitle = interaction.options.getString("title")
@@ -10,16 +10,20 @@ async function execute(interaction){
         .addFields({name: "Details", value: suggestionDescription})
         .setTimestamp()
 
-    const suggestionsChannel = await findSuggestionsChannel(interaction)
-    await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
-    await interaction.reply("Suggestion noted")
+    try {
+        const suggestionsChannel = await findSuggestionsChannel(interaction)
+        await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
+        await interaction.reply("Suggestion noted")
+    } catch(err){
+        await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+    }
 }
 
 function findSuggestionsChannel(interaction){
     return interaction.guild.channels.fetch().then((data) => {
         const channels = [...data]
         for(const channel of channels){
-            if(channel[1].name === "suggestions"){
+            if(channel[1].name === "suggestion"){
                 return channel
             }
         }
