@@ -3,7 +3,7 @@ const fs = require("fs")
 const path = require("path")
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 require("dotenv").config({
-	path: `${__dirname}/.env.private-server`
+	path: `${__dirname}/.env.production`
 })
 
 // Create a new client instance
