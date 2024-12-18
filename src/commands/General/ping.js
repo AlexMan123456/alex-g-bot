@@ -1,4 +1,5 @@
 const { Command } = require('@sapphire/framework')
+const { MessageFlags } = require('discord.js')
 
 
 class PingCommand extends Command {
@@ -13,7 +14,11 @@ class PingCommand extends Command {
 	}
 
 	async chatInputRun(interaction){
-		await interaction.reply("Pong")
+		try {
+			await interaction.reply("Pong")
+		} catch(err) {
+			await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+		}
 	}
 }
 
