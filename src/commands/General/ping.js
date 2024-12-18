@@ -1,7 +1,6 @@
 const { Command } = require('@sapphire/framework')
 const { MessageFlags } = require('discord.js')
 
-
 class PingCommand extends Command {
 	constructor(context, options){
 		super(context, {...options})
