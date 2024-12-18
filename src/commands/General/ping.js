@@ -1,25 +1,20 @@
-const { Command } = require('@sapphire/framework');
-const { send } = require('@sapphire/plugin-editable-commands');
+const { Command } = require('@sapphire/framework')
 
-class UserCommand extends Command {
-	constructor(context, options) {
-		super(context, {
-			...options,
-			description: 'ping pong'
-		});
+
+class PingCommand extends Command {
+	constructor(context, options){
+		super(context, {...options})
 	}
 
-	async messageRun(message) {
-		const msg = await send(message, 'Ping?');
+	registerApplicationCommands(registry){
+		registry.registerChatInputCommand((builder) => {
+			builder.setName("ping").setDescription("Replies with pong")
+		})
+	}
 
-		const content = `Pong from JavaScript! Bot Latency ${Math.round(this.container.client.ws.ping)}ms. API Latency ${
-			msg.createdTimestamp - message.createdTimestamp
-		}ms.`;
-
-		return send(message, content);
+	async chatInputRun(interaction){
+		await interaction.reply("Pong")
 	}
 }
 
-module.exports = {
-	UserCommand
-};
+module.exports = {PingCommand}
