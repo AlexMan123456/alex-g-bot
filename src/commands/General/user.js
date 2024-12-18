@@ -20,7 +20,7 @@ class UserCommand extends Command {
 
     async chatInputRun(interaction){
         const user = interaction.options.getUser("user") ?? interaction.user
-        const member = interaction.options.getMember("member") ?? interaction.member
+        const member = interaction.options.getMember("user") ?? interaction.member
         
         const embed = new EmbedBuilder()
 		.setTitle(user.globalName ? user.globalName : user.username)
