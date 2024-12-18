@@ -1,8 +1,6 @@
 require('./lib/setup');
 const { LogLevel, SapphireClient } = require('@sapphire/framework');
-require("dotenv").config({
-	path: `${__dirname}/../.env.development`
-})
+
 const { GatewayIntentBits, Partials } = require('discord.js');
 
 const client = new SapphireClient({
