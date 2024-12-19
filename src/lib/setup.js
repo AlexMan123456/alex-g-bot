@@ -16,4 +16,4 @@ inspect.defaultOptions.depth = 1;
 createColors({ useColor: true });
 
 // Deploy to specific guilds
-ApplicationCommandRegistries.setDefaultGuildIds(process.env.GUILD_ID?.split(',') ?? [])
+ApplicationCommandRegistries.setDefaultGuildIds(process.env.GUILD_IDS?.split(',') ?? [])
