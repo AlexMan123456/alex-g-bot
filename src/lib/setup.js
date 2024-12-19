@@ -14,3 +14,6 @@ inspect.defaultOptions.depth = 1;
 
 // Enable colorette
 createColors({ useColor: true });
+
+// Deploy to specific guilds
+ApplicationCommandRegistries.setDefaultGuildIds(process.env.GUILD_IDS?.split(',') ?? [])
