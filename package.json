@@ -19,7 +19,8 @@
     "@sapphire/type": "^2.5.1",
     "@sapphire/utilities": "^3.18.0",
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "dotenv-cli": "^7.4.4"
   },
   "devDependencies": {
     "@sapphire/cli": "^1.9.3",
