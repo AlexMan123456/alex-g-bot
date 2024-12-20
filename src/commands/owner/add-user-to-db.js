@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require("@discordjs/builders");
 const { PrismaClient } = require("@prisma/client");
 const { Command } = require("@sapphire/framework");
 
@@ -12,7 +13,10 @@ class AddUserToDatabase extends Command {
                 .setName("add-user-to-db")
                 .setDescription("Add a user to the bot's database")
                 .addUserOption((option) => {
-                    return option.setName("user").setDescription("The user to get information about")
+                    return option
+                        .setName("user")
+                        .setDescription("The user to get information about")
+                        .setRequired(true)
                 })
         })
     }
@@ -22,7 +26,7 @@ class AddUserToDatabase extends Command {
 
         const prisma = new PrismaClient()
         try {
-            await prisma.user.create({
+            const userInDb = await prisma.user.create({
                 data: {
                     user_id: user.id,
                     username: user.username,
@@ -30,7 +34,19 @@ class AddUserToDatabase extends Command {
                     bot_user: user.bot
                 }
             })
-            await interaction.reply("User added")
+
+            const embed = new EmbedBuilder()
+                .setTitle("User added")
+                .setAuthor({name: userInDb.username})
+                .setThumbnail(user.displayAvatarURL())
+                .addFields(
+                    {name: "user_id", value: userInDb.user_id},
+                    {name: "username", value: userInDb.username},
+                    {name: "global_name", value: userInDb.global_name},
+                    {name: "bot_user", value: `${user.bot}`}
+                )
+
+            await interaction.reply({embeds: [embed]})
         } catch(err) {
             await interaction.reply({content: `${err}`, ephemeral: true})
         }
