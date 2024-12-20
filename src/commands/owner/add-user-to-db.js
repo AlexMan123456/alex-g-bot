@@ -15,7 +15,7 @@ class AddUserToDatabase extends Command {
                 .addUserOption((option) => {
                     return option
                         .setName("user")
-                        .setDescription("The user to get information about")
+                        .setDescription("The user to add to the database")
                         .setRequired(true)
                 })
         })
@@ -23,8 +23,8 @@ class AddUserToDatabase extends Command {
 
     async chatInputRun(interaction){
         const user = interaction.options.getUser("user")
-
         const prisma = new PrismaClient()
+        
         try {
             const userInDb = await prisma.user.create({
                 data: {
