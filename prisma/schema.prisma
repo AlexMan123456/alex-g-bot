@@ -8,10 +8,21 @@ datasource db {
 }
 
 model User {
-  user_id     String  @id
-  username    String  @db.VarChar(100)
-  global_name String  @db.VarChar(100)
+  user_id     String       @id
+  username    String       @db.VarChar(100)
+  global_name String       @db.VarChar(100)
   bot_user    Boolean
+  suggestions Suggestion[]
 
   @@map("users")
+}
+
+model Suggestion {
+  suggestion_id Int    @id @default(autoincrement())
+  user_id       String
+  title         String @db.VarChar(100)
+  description   String
+  author        User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("suggestions")
 }
