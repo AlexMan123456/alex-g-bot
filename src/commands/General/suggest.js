@@ -1,6 +1,7 @@
-const { Command } = require("@sapphire/framework");
-const { EmbedBuilder, MessageFlags } = require("discord.js");
-const findChannel = require("../../utils/find-channel");
+const { Command } = require("@sapphire/framework")
+const { EmbedBuilder, MessageFlags } = require("discord.js")
+const findChannel = require("../../utils/find-channel")
+const { PrismaClient } = require("@prisma/client")
 
 class SuggestCommand extends Command {
     constructor(context, options){
@@ -31,6 +32,12 @@ class SuggestCommand extends Command {
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
 
+        try {
+            await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user.id)
+        } catch(err) {
+            return await interaction.reply({content: "Your suggestion could not be added. Please try again later.", ephemeral: true})
+        }
+
         const embed = new EmbedBuilder()
             .setTitle(suggestionTitle)
             .setAuthor({name: interaction.user.globalName})
@@ -40,9 +47,9 @@ class SuggestCommand extends Command {
         try {
             const suggestionsChannel = await findSuggestionsChannel(interaction)
             await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
-            await interaction.reply({embeds: [embed], flags: MessageFlags.Ephemeral})
+            await interaction.reply({embeds: [embed], ephemeral: true})
         } catch(err) {
-            await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+            await interaction.reply({content: `${err}`, ephemeral: true})
         }
     }
 }
@@ -50,6 +57,14 @@ class SuggestCommand extends Command {
 function findSuggestionsChannel(interaction){
     return interaction.guild.channels.fetch().then((data) => {
         return findChannel([...data], "suggestions")
+    })
+}
+
+async function addSuggestionToDatabase(suggestion, user_id){
+    const {title, description} = suggestion
+    const prisma = new PrismaClient()
+    await prisma.suggestion.create({
+        data: {user_id, title, description}
     })
 }
 
