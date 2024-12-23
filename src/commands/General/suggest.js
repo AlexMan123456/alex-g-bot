@@ -1,7 +1,6 @@
-const { Command } = require("@sapphire/framework")
+const { Command, container } = require("@sapphire/framework")
 const { EmbedBuilder, MessageFlags } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
-const { PrismaClient } = require("@prisma/client")
 
 class SuggestCommand extends Command {
     constructor(context, options){
@@ -35,7 +34,7 @@ class SuggestCommand extends Command {
         try {
             await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user.id)
         } catch(err) {
-            return await interaction.reply({content: "Your suggestion could not be added. Please try again later.", ephemeral: true})
+            return await interaction.reply({content: `${err}`, ephemeral: true})
         }
 
         const embed = new EmbedBuilder()
@@ -62,8 +61,8 @@ function findSuggestionsChannel(interaction){
 
 async function addSuggestionToDatabase(suggestion, user_id){
     const {title, description} = suggestion
-    const prisma = new PrismaClient()
-    await prisma.suggestion.create({
+    const {database} = container
+    await database.suggestion.create({
         data: {user_id, title, description}
     })
 }

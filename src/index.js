@@ -1,5 +1,6 @@
 require('./lib/setup');
-const { LogLevel, SapphireClient } = require('@sapphire/framework');
+const { PrismaClient } = require('@prisma/client');
+const { LogLevel, SapphireClient, container } = require('@sapphire/framework');
 
 const { GatewayIntentBits, Partials } = require('discord.js');
 
@@ -30,10 +31,12 @@ const client = new SapphireClient({
 const main = async () => {
 	try {
 		client.logger.info('Logging in');
+		container.database = new PrismaClient()
 		await client.login(process.env.DISCORD_TOKEN);
 		client.logger.info('logged in');
 	} catch (error) {
 		client.logger.fatal(error);
+		container.database.destroy()
 		client.destroy();
 		process.exit(1);
 	}

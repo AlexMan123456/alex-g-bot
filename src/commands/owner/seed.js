@@ -14,7 +14,7 @@ class SeedCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        const prisma = new PrismaClient()
+        const {database} = container
 
         const res = await Result.fromAsync(container.client.guilds.fetch())
         const users = res.match({
