@@ -31,7 +31,7 @@ class QueryCommand extends Command {
             .setAuthor({name: interaction.user.username})
             .addFields(
                 {name: "Input", value: "```" + queryString + "```"},
-                {name: "Output", value: "```js\n" + JSON.stringify(queryResult, undefined, 4) + "```"}
+                {name: "Output", value: "```js\n" + JSON.stringify(queryResult, undefined, 2) + "```"}
             )
             .setColor(colour)
         
