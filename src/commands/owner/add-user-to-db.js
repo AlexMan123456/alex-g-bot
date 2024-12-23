@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("@discordjs/builders");
 const { PrismaClient } = require("@prisma/client");
-const { Command } = require("@sapphire/framework");
+const { Command, container } = require("@sapphire/framework");
 
 class AddUserToDatabase extends Command {
     constructor(context, options){
@@ -23,10 +23,10 @@ class AddUserToDatabase extends Command {
 
     async chatInputRun(interaction){
         const user = interaction.options.getUser("user")
-        const prisma = new PrismaClient()
+        const {database} = container
         
         try {
-            const userInDb = await prisma.user.create({
+            const userInDb = await database.user.create({
                 data: {
                     user_id: user.id,
                     username: user.username,

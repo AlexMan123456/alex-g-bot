@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
-const { Command } = require("@sapphire/framework")
+const { Command, container } = require("@sapphire/framework")
 const { EmbedBuilder } = require("discord.js")
-const prisma = new PrismaClient()
 
 class QueryCommand extends Command {
     constructor(context, options){
@@ -40,7 +39,8 @@ class QueryCommand extends Command {
 }
 
 function runQuery(queryString){
-    return prisma.$queryRawUnsafe(queryString).then((queryResult) => {
+    const {database} = container
+    return database.$queryRawUnsafe(queryString).then((queryResult) => {
         return {queryResult, colour: "Green"}
     }).catch((err) => {
         return {queryResult: err, colour: "Red"}
