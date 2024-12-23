@@ -15,7 +15,7 @@ class AddUserToDatabase extends Command {
                 .addUserOption((option) => {
                     return option
                         .setName("user")
-                        .setDescription("The user to add to the database")
+                        .setDescription("(OWNER ONLY) The user to add to the database")
                         .setRequired(true)
                 })
         })
