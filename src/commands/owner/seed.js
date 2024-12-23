@@ -1,6 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
 const { Command, Result, container } = require("@sapphire/framework");
-const { MessageFlags } = require("discord.js");
 
 class SeedCommand extends Command {
     constructor(context, options){

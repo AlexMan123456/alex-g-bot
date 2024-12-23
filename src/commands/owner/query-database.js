@@ -1,4 +1,3 @@
-const { PrismaClient } = require("@prisma/client")
 const { Command, container } = require("@sapphire/framework")
 const { EmbedBuilder } = require("discord.js")
 

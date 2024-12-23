@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require("@discordjs/builders");
-const { PrismaClient } = require("@prisma/client");
 const { Command, container } = require("@sapphire/framework");
 
 class AddUserToDatabase extends Command {
