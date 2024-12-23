@@ -1,7 +1,7 @@
 const { Command } = require("@sapphire/framework");
 const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } = require("discord.js");
 
-class EvalCommand extends Command{
+class EvalCommand extends Command {
 	constructor(context, options){
         super(context, {...options, preconditions: ["OwnerOnly"]})
     }
