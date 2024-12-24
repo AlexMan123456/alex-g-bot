@@ -14,4 +14,10 @@ function postUser(user){
     })
 }
 
-module.exports = { postUser }
+function getUserById(user_id){
+    return database.user.findUnique({where: {user_id}}).then((user) => {
+        return user
+    })
+}
+
+module.exports = { postUser, getUserById }

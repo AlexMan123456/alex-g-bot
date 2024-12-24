@@ -1,6 +1,8 @@
 const { Command, container } = require("@sapphire/framework")
 const { EmbedBuilder, MessageFlags } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
+const { getUserById, postUser } = require("../../database-interactions/users")
+const { postSuggestion } = require("../../database-interactions/suggestions")
 
 class SuggestCommand extends Command {
     constructor(context, options){
@@ -32,7 +34,7 @@ class SuggestCommand extends Command {
         const suggestionDescription = interaction.options.getString("description")
 
         try {
-            await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user.id)
+            await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user)
         } catch(err) {
             return await interaction.reply({content: `${err}`, ephemeral: true})
         }
@@ -59,12 +61,13 @@ function findSuggestionsChannel(interaction){
     })
 }
 
-async function addSuggestionToDatabase(suggestion, user_id){
-    const {title, description} = suggestion
-    const {database} = container
-    await database.suggestion.create({
-        data: {user_id, title, description}
-    })
+async function addSuggestionToDatabase(suggestion, user){
+    const author = await getUserById(user.id)
+    if(!author){
+        await postUser(user)
+    }
+    await postSuggestion(suggestion, user.id)
 }
+
 
 module.exports = {SuggestCommand}

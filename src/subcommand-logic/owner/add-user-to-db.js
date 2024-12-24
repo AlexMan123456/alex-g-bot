@@ -1,6 +1,6 @@
 const { container } = require("@sapphire/framework")
 const { EmbedBuilder } = require("discord.js")
-const { postUser } = require("../../database/users.js")
+const { postUser } = require("../../database-interactions/users.js")
 
 async function addUserToDatabase(interaction){
     const user = interaction.options.getUser("user")
