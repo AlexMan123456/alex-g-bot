@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js")
-const postGuild = require("../../database-interactions/guilds.js")
+const { postGuild } = require("../../database-interactions/guilds.js")
 
 async function addGuildToDatabase(interaction){
     try {

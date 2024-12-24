@@ -12,4 +12,12 @@ function postGuild(guild){
     })
 }
 
-module.exports = postGuild
+function getGuildById(guild_id){
+    return database.guild.findUnique({
+        where: {guild_id}
+    }).then((guild) => {
+        return guild
+    })
+}
+
+module.exports = { postGuild, getGuildById }
