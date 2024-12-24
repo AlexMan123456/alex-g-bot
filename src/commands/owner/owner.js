@@ -1,6 +1,7 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
 const evalCommand = require("../../subcommand-logic/owner/eval.js");
+const addUserToDatabase = require("../../subcommand-logic/owner/add-user-to-db.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -21,6 +22,10 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "eval",
                     chatInputRun: "chatInputEval"
+                },
+                {
+                    name: "add-user-to-db",
+                    chatInputRun: "chatInputAddUserToDatabase"
                 }
             ]
         })
@@ -52,6 +57,17 @@ class OwnerCommand extends Subcommand {
                         .setName("eval")
                         .setDescription("Evaluates some JavaScript code")
                 })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("add-user-to-db")
+                        .setDescription("Add a user to the bot's database")
+                        .addUserOption((option) => {
+                            return option
+                                .setName("user")
+                                .setDescription("(OWNER ONLY) The user to add to the database")
+                                .setRequired(true)
+                        })
+                })
         })
     }
 
@@ -69,6 +85,10 @@ class OwnerCommand extends Subcommand {
 
     async chatInputEval(interaction){
         await evalCommand(interaction)
+    }
+
+    async chatInputAddUserToDatabase(interaction){
+        await addUserToDatabase(interaction)
     }
 }
 
