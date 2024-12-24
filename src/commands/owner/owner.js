@@ -2,6 +2,7 @@ const { Subcommand } = require("@sapphire/plugin-subcommands");
 const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
 const evalCommand = require("../../subcommand-logic/owner/eval.js");
 const addUserToDatabase = require("../../subcommand-logic/owner/add-user-to-db.js");
+const addGuildToDatabase = require("../../subcommand-logic/owner/add-guild-to-db.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -26,6 +27,10 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "add-user-to-db",
                     chatInputRun: "chatInputAddUserToDatabase"
+                },
+                {
+                    name: "add-guild-to-db",
+                    chatInputRun: "chatInputAddGuildToDatabase"
                 }
             ]
         })
@@ -33,7 +38,7 @@ class OwnerCommand extends Subcommand {
 
     registerApplicationCommands(registry){
         registry.registerChatInputCommand((builder) => {
-            builder
+            return builder
                 .setName("owner")
                 .setDescription("Commands only the owner can run")
                 .addSubcommand((command) => {
@@ -68,6 +73,11 @@ class OwnerCommand extends Subcommand {
                                 .setRequired(true)
                         })
                 })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("add-guild-to-db")
+                        .setDescription("Add a guild to the bot's database")
+                })
         })
     }
 
@@ -89,6 +99,10 @@ class OwnerCommand extends Subcommand {
 
     async chatInputAddUserToDatabase(interaction){
         await addUserToDatabase(interaction)
+    }
+
+    async chatInputAddGuildToDatabase(interaction){
+        await addGuildToDatabase(interaction)
     }
 }
 

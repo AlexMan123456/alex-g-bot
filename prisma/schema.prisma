@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  user_id     String       @id
-  username    String       @db.VarChar(100)
-  global_name String       @db.VarChar(100)
+  user_id     String           @id
+  username    String           @db.VarChar(100)
+  global_name String           @db.VarChar(100)
   bot_user    Boolean
   suggestions Suggestion[]
+  guilds      UsersAndGuilds[]
 
   @@map("users")
 }
@@ -25,4 +26,23 @@ model Suggestion {
   author        User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("suggestions")
+}
+
+model Guild {
+  guild_id String           @id
+  name     String
+  users    UsersAndGuilds[]
+
+  @@map("guilds")
+}
+
+model UsersAndGuilds {
+  user_id   String
+  guild_id  String
+  joined_at DateTime
+  guild     Guild    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, guild_id])
+  @@map("users_and_guilds")
 }
