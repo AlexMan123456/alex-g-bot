@@ -1,5 +1,6 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
+const evalCommand = require("../../subcommand-logic/owner/eval.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -16,6 +17,10 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "query-database",
                     chatInputRun: "chatInputQueryDatabase"
+                },
+                {
+                    name: "eval",
+                    chatInputRun: "chatInputEval"
                 }
             ]
         })
@@ -42,6 +47,11 @@ class OwnerCommand extends Subcommand {
                                 .setRequired(true)
                         })
                 })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("eval")
+                        .setDescription("Evaluates some JavaScript code")
+                })
         })
     }
 
@@ -55,6 +65,10 @@ class OwnerCommand extends Subcommand {
 
     async chatInputQueryDatabase(interaction){
         await queryDatabase(interaction)
+    }
+
+    async chatInputEval(interaction){
+        await evalCommand(interaction)
     }
 }
 
