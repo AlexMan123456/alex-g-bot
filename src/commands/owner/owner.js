@@ -25,7 +25,7 @@ class OwnerCommand extends Subcommand {
         registry.registerChatInputCommand((builder) => {
             builder
                 .setName("owner")
-                .setDescription("Commands only Alex can run")
+                .setDescription("Commands only the owner can run")
                 .addSubcommand((command) => {
                     return command
                         .setName("test")
