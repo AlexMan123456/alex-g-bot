@@ -1,4 +1,5 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
+const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -13,8 +14,8 @@ class OwnerCommand extends Subcommand {
                     default: true
                 },
                 {
-                    name: "test-two",
-                    chatInputRun: "chatInputTestTwo"
+                    name: "query-database",
+                    chatInputRun: "chatInputQueryDatabase"
                 }
             ]
         })
@@ -32,8 +33,14 @@ class OwnerCommand extends Subcommand {
                 })
                 .addSubcommand((command) => {
                     return command
-                        .setName("test-two")
-                        .setDescription("Show another secret message if run by the owner")
+                        .setName("query-database")
+                        .setDescription("Query the database using a raw SQL string")
+                        .addStringOption((option) => {
+                            return option
+                                .setName("query")
+                                .setDescription("The query string")
+                                .setRequired(true)
+                        })
                 })
         })
     }
@@ -46,12 +53,8 @@ class OwnerCommand extends Subcommand {
         }
     }
 
-    async chatInputTestTwo(interaction){
-        try {
-            await interaction.reply(`AlexGBot is the best bot`)
-        } catch(err) {
-            await interaction.reply({content: `${err}`, ephemeral: true})
-        }
+    async chatInputQueryDatabase(interaction){
+        await queryDatabase(interaction)
     }
 }
 
