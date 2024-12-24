@@ -1,19 +1,12 @@
 const { container } = require("@sapphire/framework")
 const { EmbedBuilder } = require("discord.js")
+const { postUser } = require("../../database-interactions/users.js")
 
 async function addUserToDatabase(interaction){
     const user = interaction.options.getUser("user")
-    const {database} = container
     
     try {
-        const userInDb = await database.user.create({
-            data: {
-                user_id: user.id,
-                username: user.username,
-                global_name: user.globalName ?? user.username,
-                bot_user: user.bot
-            }
-        })
+        const userInDb = await postUser(user)
 
         const embed = new EmbedBuilder()
             .setTitle("User added")
@@ -25,7 +18,7 @@ async function addUserToDatabase(interaction){
                 {name: "global_name", value: userInDb.global_name},
                 {name: "bot_user", value: `${user.bot}`}
             )
-            
+
         await interaction.reply({embeds: [embed]})
     } catch(err) {
         await interaction.reply({content: `${err}`, ephemeral: true})
