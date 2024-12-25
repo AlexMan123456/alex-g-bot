@@ -11,7 +11,7 @@ function postUser(user, guild, joined_at){
             guilds: {
                 create: [
                     {
-                        guild_id: guild.guild_id,
+                        guild_id: guild.id,
                         joined_at
                     }
                 ]
@@ -23,7 +23,21 @@ function postUser(user, guild, joined_at){
 }
 
 function getUserById(user_id){
-    return database.user.findUnique({where: {user_id}}).then((user) => {
+    return database.user.findUnique({
+        select: {
+            user_id: true,
+            username: true,
+            global_name: true,
+            bot_user: true,
+            guilds: {
+                select: {
+                    guild: true,
+                    joined_at: true
+                }
+            }
+        },
+        where: {user_id}
+    }).then((user) => {
         return user
     })
 }

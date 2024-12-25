@@ -3,6 +3,7 @@ const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
 const evalCommand = require("../../subcommand-logic/owner/eval.js");
 const addUserToDatabase = require("../../subcommand-logic/owner/add-user-to-db.js");
 const addGuildToDatabase = require("../../subcommand-logic/owner/add-guild-to-db.js");
+const addUserToGuild = require("../../subcommand-logic/owner/add-user-to-guild.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -31,6 +32,10 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "add-guild-to-db",
                     chatInputRun: "chatInputAddGuildToDatabase"
+                },
+                {
+                    name: "add-user-to-guild",
+                    chatInputRun: "chatInputAddUserToGuild"
                 }
             ]
         })
@@ -69,7 +74,7 @@ class OwnerCommand extends Subcommand {
                         .addUserOption((option) => {
                             return option
                                 .setName("user")
-                                .setDescription("(OWNER ONLY) The user to add to the database")
+                                .setDescription("The user to add to the database")
                                 .setRequired(true)
                         })
                 })
@@ -77,6 +82,16 @@ class OwnerCommand extends Subcommand {
                     return command
                         .setName("add-guild-to-db")
                         .setDescription("Add a guild to the bot's database")
+                })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("add-user-to-guild")
+                        .setDescription("Add a user to a guild in the bot's database")
+                        .addUserOption((option) => {
+                            return option
+                                .setName("user")
+                                .setDescription("The user to add to the guild the command is being run in")
+                        })
                 })
         })
     }
@@ -103,6 +118,10 @@ class OwnerCommand extends Subcommand {
 
     async chatInputAddGuildToDatabase(interaction){
         await addGuildToDatabase(interaction)
+    }
+
+    async chatInputAddUserToGuild(interaction){
+        await addUserToGuild(interaction)
     }
 }
 

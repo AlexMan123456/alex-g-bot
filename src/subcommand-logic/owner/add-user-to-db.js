@@ -11,7 +11,7 @@ async function addUserToDatabase(interaction){
         if(!guild){
             await postGuild(interaction.guild)
         }
-        const userInDb = await postUser(user, guild, joinedAt)
+        const userInDb = await postUser(user, interaction.guild, joinedAt)
         const embed = new EmbedBuilder()
             .setTitle("User added")
             .setAuthor({name: userInDb.username})
