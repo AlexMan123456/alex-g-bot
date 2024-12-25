@@ -1,6 +1,9 @@
 const { EmbedBuilder } = require("@discordjs/builders")
 const { Command } = require("@sapphire/framework")
 const { MessageFlags } = require("discord.js")
+const { getUserById, postUser } = require("../../database-interactions/users.js")
+const { getGuildById } = require("../../database-interactions/guilds.js")
+const formatDateAndTime = require("../../utils/format-date-and-time.js")
 
 class UserCommand extends Command {
     constructor(context, options){
@@ -19,23 +22,33 @@ class UserCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        const user = interaction.options.getUser("user") ?? interaction.user
+        const userFromGuild = interaction.options.getUser("user") ?? interaction.user
         const member = interaction.options.getMember("user") ?? interaction.member
-        
-        const embed = new EmbedBuilder()
-		.setTitle(user.globalName ? user.globalName : user.username)
-		.setAuthor({name: interaction.user.username})
-		.setThumbnail(member.displayAvatarURL())
-		.addFields(
-			{name: "Username:", value: user.username},
-			{name: "Bot user:", value: `${user.bot}`},
-			{name: "Joined server on:", value: `${member.joinedAt}`}
-		)
-	try{
-		await interaction.reply({embeds: [embed]})
-	}catch(err){
-		await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
-	}
+
+        try {
+            const user = await getUserById(userFromGuild.id) ?? await postUser(userFromGuild, interaction.guild, member.joinedAt)
+            const currentGuild = user.guilds.find(({guild}) => {
+                return guild.guild_id = interaction.guild.id
+            })
+            const {date: joinDate, time: joinTime} = formatDateAndTime(currentGuild.joined_at.toISOString())
+
+            const embed = new EmbedBuilder()
+            .setTitle(user.global_name)
+            .setAuthor({name: interaction.user.username})
+            .setThumbnail(member.displayAvatarURL())
+            .addFields(
+                {name: "Username:", value: user.username},
+                {name: "Bot user:", value: `${user.bot_user}`},
+                {name: "Joined server on:", value: `${joinDate}, ${joinTime}`},
+                {name: "Guilds", value: user.guilds.map(({guild}) => {
+                    return `• ${guild.name}`
+                }).join("\n")}
+            )
+
+            await interaction.reply({embeds: [embed]})
+        } catch(err) {
+            await interaction.reply({content: `${err}`, ephemeral: true})
+        }
     }
 }
 

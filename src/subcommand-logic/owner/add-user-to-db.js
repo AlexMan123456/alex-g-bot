@@ -1,13 +1,17 @@
-const { container } = require("@sapphire/framework")
 const { EmbedBuilder } = require("discord.js")
 const { postUser } = require("../../database-interactions/users.js")
+const { getGuildById, postGuild } = require("../../database-interactions/guilds.js")
 
 async function addUserToDatabase(interaction){
     const user = interaction.options.getUser("user")
+    const {joinedAt} = interaction.options.getMember("user")
     
     try {
-        const userInDb = await postUser(user)
-
+        const guild = await getGuildById(interaction.guild.id)
+        if(!guild){
+            await postGuild(interaction.guild)
+        }
+        const userInDb = await postUser(user, interaction.guild, joinedAt)
         const embed = new EmbedBuilder()
             .setTitle("User added")
             .setAuthor({name: userInDb.username})
