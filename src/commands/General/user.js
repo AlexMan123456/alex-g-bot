@@ -40,9 +40,6 @@ class UserCommand extends Command {
                 {name: "Username:", value: user.username},
                 {name: "Bot user:", value: `${user.bot_user}`},
                 {name: "Joined server on:", value: `${joinDate}, ${joinTime}`},
-                {name: "Guilds", value: user.guilds.map(({guild}) => {
-                    return `• ${guild.name}`
-                }).join("\n")}
             )
 
             await interaction.reply({embeds: [embed]})
