@@ -38,7 +38,7 @@ class UserCommand extends Command {
             .setThumbnail(member.displayAvatarURL())
             .addFields(
                 {name: "Username:", value: user.username},
-                {name: "Bot user:", value: `${user.bot_user}`},
+                {name: "Bot user:", value: user.bot_user ? "Yes" : "No"},
                 {name: "Joined server on:", value: `${joinDate}, ${joinTime}`},
             )
 
