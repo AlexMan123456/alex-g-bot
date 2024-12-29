@@ -23,8 +23,11 @@ class UserListener extends Listener {
         }).then((channelData) => {
             return client.guild.channels.cache.get(channelData[0])
         })
-
-        await welcomeLeaveChannel.send(`<@${client.user.id}> has joined ${client.guild.name}!`)
+        try {
+            await welcomeLeaveChannel.send(`<@${client.user.id}> has joined ${client.guild.name}!`)
+        } catch(err) {
+            await welcomeLeaveChannel.send(`${client.user.username} has joined ${client.guild.name}`)
+        }
     }
 }
 
