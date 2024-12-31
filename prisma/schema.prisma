@@ -29,9 +29,11 @@ model Suggestion {
 }
 
 model Guild {
-  guild_id String           @id
-  name     String
-  users    UsersAndGuilds[]
+  guild_id        String           @id
+  name            String
+  welcome_message String           @default("{user} has joined {guild}")
+  leave_message   String           @default("{user} has left {guild}")
+  users           UsersAndGuilds[]
 
   @@map("guilds")
 }

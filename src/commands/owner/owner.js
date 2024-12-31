@@ -4,6 +4,8 @@ const evalCommand = require("../../subcommand-logic/owner/eval.js");
 const addUserToDatabase = require("../../subcommand-logic/owner/add-user-to-db.js");
 const addGuildToDatabase = require("../../subcommand-logic/owner/add-guild-to-db.js");
 const addUserToGuild = require("../../subcommand-logic/owner/add-user-to-guild.js");
+const setWelcomeMessage = require("../../subcommand-logic/owner/set-welcome-message.js");
+const setLeaveMessage = require("../../subcommand-logic/owner/set-leave-message.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -36,6 +38,14 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "add-user-to-guild",
                     chatInputRun: "chatInputAddUserToGuild"
+                },
+                {
+                    name: "set-welcome-message",
+                    chatInputRun: "chatInputSetWelcomeMessage"
+                },
+                {
+                    name: "set-leave-message",
+                    chatInputRun: "chatInputSetLeaveMessage"
                 }
             ]
         })
@@ -93,6 +103,26 @@ class OwnerCommand extends Subcommand {
                                 .setDescription("The user to add to the guild the command is being run in")
                         })
                 })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("set-welcome-message")
+                        .setDescription("Set a custom welcome message for your guild")
+                        .addStringOption((option) => {
+                            return option
+                                .setName("message")
+                                .setDescription("The new welcome message (leave blank to reset to default)")
+                        })
+                })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("set-leave-message")
+                        .setDescription("Set a custom leave message for your guild")
+                        .addStringOption((option) => {
+                            return option
+                                .setName("message")
+                                .setDescription("The new leave message (leave blank to reset to default)")
+                        })
+                })
         })
     }
 
@@ -122,6 +152,14 @@ class OwnerCommand extends Subcommand {
 
     async chatInputAddUserToGuild(interaction){
         await addUserToGuild(interaction)
+    }
+
+    async chatInputSetWelcomeMessage(interaction){
+        await setWelcomeMessage(interaction)
+    }
+
+    async chatInputSetLeaveMessage(interaction){
+        await setLeaveMessage(interaction)
     }
 }
 
