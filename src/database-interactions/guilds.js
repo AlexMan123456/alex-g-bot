@@ -20,4 +20,22 @@ function getGuildById(guild_id){
     })
 }
 
-module.exports = { postGuild, getGuildById }
+function setNewWelcomeMessage(guild_id, welcome_message){
+    return database.guild.update({
+        where: {guild_id},
+        data: {welcome_message}
+    }).then((guild) => {
+        return guild
+    })
+}
+
+function setNewLeaveMessage(guild_id, leave_message){
+    return database.guild.update({
+        where: {guild_id},
+        data: {leave_message}
+    }).then((guild) => {
+        return guild
+    })
+}
+
+module.exports = { postGuild, getGuildById, setNewWelcomeMessage, setNewLeaveMessage }
