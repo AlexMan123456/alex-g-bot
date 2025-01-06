@@ -1,5 +1,5 @@
 function formatUserGuildMessage(message, user, guild){
-    const messageParts =  message.split(" ").map((token) => {
+    return message.split(" ").map((token) => {
         if(token.includes("{user}")){
             return formatUsername(token, user)
         }
@@ -8,7 +8,6 @@ function formatUserGuildMessage(message, user, guild){
         }
         return token
     }).join(" ")
-    return messageParts
 }
 
 function formatUsername(token, user){
