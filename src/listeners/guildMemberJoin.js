@@ -39,7 +39,7 @@ class UserListener extends Listener {
             try {
                 await welcomeLeaveChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
             } catch(err) {
-                await logError(`${err}`, client)
+                await logError(`Error sending message: ${err}`, client)
             }
         }
     }
