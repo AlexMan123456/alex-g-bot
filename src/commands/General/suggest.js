@@ -3,6 +3,7 @@ const { EmbedBuilder, MessageFlags } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
+const logError = require("../../utils/log-error")
 
 class SuggestCommand extends Command {
     constructor(context, options){
@@ -36,7 +37,8 @@ class SuggestCommand extends Command {
         try {
             await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user)
         } catch(err) {
-            return await interaction.reply({content: `${err}`, ephemeral: true})
+            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
+            return await logError(`${err}`, interaction)
         }
 
         const embed = new EmbedBuilder()
@@ -46,19 +48,13 @@ class SuggestCommand extends Command {
             .setTimestamp()
 
         try {
-            const suggestionsChannel = await findSuggestionsChannel(interaction)
+            const suggestionsChannel = await findChannel(interaction, "suggestions")
             await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
             await interaction.reply({embeds: [embed], ephemeral: true})
         } catch(err) {
             await interaction.reply({content: `${err}`, ephemeral: true})
         }
     }
-}
-
-function findSuggestionsChannel(interaction){
-    return interaction.guild.channels.fetch().then((data) => {
-        return findChannel([...data], "suggestions")
-    })
 }
 
 async function addSuggestionToDatabase(suggestion, user){

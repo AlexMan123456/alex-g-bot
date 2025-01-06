@@ -4,6 +4,7 @@ const { addUserAndGuildRelation } = require("../database-interactions/usersAndGu
 const findChannel = require("../utils/find-channel.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
+const logError = require("../utils/log-error.js")
 
 class UserListener extends Listener {
     constructor(context, options) {
@@ -14,15 +15,17 @@ class UserListener extends Listener {
     }
 
     async run(client){
-        await getUserById(client.user.id)
-        ?
-        await addUserAndGuildRelation(client.user.id, client.guild.id, new Date(client.joinedTimestamp))
-        :
-        await postUser(client.user, client.guild, new Date(client.joinedTimestamp))
+        try {
+            await getUserById(client.user.id)
+            ?
+            await addUserAndGuildRelation(client.user.id, client.guild.id, new Date(client.joinedTimestamp))
+            :
+            await postUser(client.user, client.guild, new Date(client.joinedTimestamp))
+        } catch(err) {
+            return await logError(`${err}`, client)
+        }
 
-        const welcomeLeaveChannel = await client.guild.channels.fetch().then((data) => {
-            return findChannel([...data], "welcome-leave")
-        }).then((channelData) => {
+        const welcomeLeaveChannel = await findChannel(client, "welcome-leave").then((channelData) => {
             return client.guild.channels.cache.get(channelData[0])
         })
 
@@ -33,7 +36,11 @@ class UserListener extends Listener {
         try {
             await welcomeLeaveChannel.send(welcomeMessage)
         } catch(err) {
-            await welcomeLeaveChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
+            try {
+                await welcomeLeaveChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
+            } catch(err) {
+                await logError(`${err}`, client)
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ const { removeUserFromGuild } = require("../database-interactions/usersAndGuilds
 const findChannel = require("../utils/find-channel.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
+const logError = require("../utils/log-error.js")
 
 class UserListener extends Listener {
     constructor(context, options) {
@@ -14,19 +15,25 @@ class UserListener extends Listener {
     }
 
     async run(client){
-        await removeUserFromGuild(client.user.id, client.guild.id)
-
-        const welcomeLeaveChannel = await client.guild.channels.fetch().then((data) => {
-            return findChannel([...data], "welcome-leave")
-        }).then((channelData) => {
-            return client.guild.channels.cache.get(channelData[0])
-        })
-
-        const leaveMessage = await getGuildById(client.guild.id).then((guild) => {
-            return formatUserGuildMessage(guild.leave_message, client.user.username, client.guild.name)
-        })
-
-        await welcomeLeaveChannel.send(leaveMessage)
+        try {
+            await removeUserFromGuild(client.user.id, client.guild.id)
+        } catch(err) {
+            await logError(`${err}`, client)
+        }
+        
+        try {
+            const welcomeLeaveChannel = await findChannel(client, "welcome-leave").then((channelData) => {
+                return client.guild.channels.cache.get(channelData[0])
+            })
+    
+            const leaveMessage = await getGuildById(client.guild.id).then((guild) => {
+                return formatUserGuildMessage(guild.leave_message, client.user.username, client.guild.name)
+            })
+    
+            await welcomeLeaveChannel.send(leaveMessage)
+        } catch(err) {
+            await logError(`${err}`, client)
+        }
     }
 }
 
