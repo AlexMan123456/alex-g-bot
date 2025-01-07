@@ -18,7 +18,7 @@ class UserListener extends Listener {
         try {
             await removeUserFromGuild(client.user.id, client.guild.id)
         } catch(err) {
-            await logError(`${err}`, client)
+            await logError(client, err)
         }
         
         try {
@@ -32,7 +32,7 @@ class UserListener extends Listener {
     
             await welcomeLeaveChannel.send(leaveMessage)
         } catch(err) {
-            await logError(`${err}`, client)
+            await logError(client, err)
         }
     }
 }

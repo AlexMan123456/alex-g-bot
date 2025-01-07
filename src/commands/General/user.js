@@ -4,6 +4,7 @@ const { MessageFlags } = require("discord.js")
 const { getUserById, postUser } = require("../../database-interactions/users.js")
 const { getGuildById } = require("../../database-interactions/guilds.js")
 const formatDateAndTime = require("../../utils/format-date-and-time.js")
+const logError = require("../../utils/log-error.js")
 
 class UserCommand extends Command {
     constructor(context, options){
@@ -44,7 +45,8 @@ class UserCommand extends Command {
 
             await interaction.reply({embeds: [embed]})
         } catch(err) {
-            await interaction.reply({content: `${err}`, ephemeral: true})
+            await interaction.reply({content: "Error fetching user. Please try again later.", ephemeral: true})
+            await logError(interaction, err)
         }
     }
 }

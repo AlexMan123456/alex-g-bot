@@ -1,3 +1,4 @@
+const { stripIndents } = require("common-tags")
 const { setNewLeaveMessage } = require("../../database-interactions/guilds.js")
 
 async function setLeaveMessage(interaction){
@@ -5,9 +6,9 @@ async function setLeaveMessage(interaction){
     try {
         const guild = await setNewLeaveMessage(interaction.guild.id, message)
         await interaction.reply(
-            `**New Leave Message**
+            stripIndents(`**New Leave Message**
             ${guild.leave_message}
-            `)
+            `))
     } catch(err) {
         await interaction.reply({content: `${err}`, ephemeral: true})
     }
