@@ -31,7 +31,7 @@ class RoleCommand extends Command {
             .setTitle(role.name)
             .setColor(role.color)
             .addFields(
-                {name: "Role", value: `<@${role.id}>`},
+                {name: "Role", value: `<@&${role.id}>`},
                 //{name: "Permissions", value: role.permissions},
                 {name: "Mentionable", value: role.mentionable ? "Yes" : "No"},
                 {name: "Created on", value: `${date}, ${time}`}
