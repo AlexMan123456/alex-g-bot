@@ -1,5 +1,6 @@
 const { Command } = require("@sapphire/framework");
 const { MessageFlags } = require("discord.js");
+const logError = require("../../utils/log-error");
 
 class GitHubCommand extends Command {
     constructor(context, options){
@@ -16,7 +17,8 @@ class GitHubCommand extends Command {
         try {
             await interaction.reply("Here is the link to the GitHub repository for my code: https://github.com/AlexMan123456/alex-g-bot")
         } catch(err) {
-            await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+            await interaction.reply({content: "Error getting GitHub repository. Please try again later.", flags: MessageFlags.Ephemeral})
+            await logError(interaction, err)
         }
     }
 }

@@ -38,7 +38,7 @@ class SuggestCommand extends Command {
             await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user)
         } catch(err) {
             await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
-            return await logError(`${err}`, interaction)
+            return await logError(interaction, err)
         }
 
         const embed = new EmbedBuilder()

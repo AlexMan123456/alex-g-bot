@@ -1,5 +1,5 @@
 const { Command } = require('@sapphire/framework')
-const { MessageFlags } = require('discord.js')
+const logError = require('../../utils/log-error')
 
 class PingCommand extends Command {
 	constructor(context, options){
@@ -16,7 +16,8 @@ class PingCommand extends Command {
 		try {
 			await interaction.reply("Pong")
 		} catch(err) {
-			await interaction.reply({content: `${err}`, flags: MessageFlags.Ephemeral})
+			await interaction.reply({content: "My code is so bad, it fails at even just a simple ping command!", ephemeral: true})
+			await logError(interaction, err)
 		}
 	}
 }

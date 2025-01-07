@@ -22,7 +22,7 @@ class UserListener extends Listener {
             :
             await postUser(client.user, client.guild, new Date(client.joinedTimestamp))
         } catch(err) {
-            return await logError(`${err}`, client)
+            return await logError(client, err)
         }
 
         const welcomeLeaveChannel = await findChannel(client, "welcome-leave").then((channelData) => {
@@ -39,7 +39,7 @@ class UserListener extends Listener {
             try {
                 await welcomeLeaveChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
             } catch(err) {
-                await logError(`${err}`, client)
+                await logError(client, err)
             }
         }
     }
