@@ -1,5 +1,5 @@
-const { Command, container } = require("@sapphire/framework")
-const { EmbedBuilder, MessageFlags } = require("discord.js")
+const { Command } = require("@sapphire/framework")
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
@@ -35,24 +35,36 @@ class SuggestCommand extends Command {
         const suggestionDescription = interaction.options.getString("description")
 
         try {
-            await addSuggestionToDatabase({title: suggestionTitle, description: suggestionDescription}, interaction.user)
-        } catch(err) {
-            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
-            return await logError(interaction, err)
-        }
+            const suggestionsChannel = await findChannel(interaction, "suggestions").then((channelDetails) => {
+                return interaction.guild.channels.cache.get(channelDetails[0])
+            })
+            const message = await suggestionsChannel.send({content: "Logging suggestion..."})
+            const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction.user)
+            console.log(suggestion)
 
-        const embed = new EmbedBuilder()
-            .setTitle(suggestionTitle)
-            .setAuthor({name: interaction.user.globalName})
-            .addFields({name: "Details", value: suggestionDescription})
-            .setTimestamp()
+            const resolveButton = new ButtonBuilder()
+                .setCustomId("resolve")
+                .setLabel("Resolve")
+                .setStyle(ButtonStyle.Success)
 
-        try {
-            const suggestionsChannel = await findChannel(interaction, "suggestions")
-            await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
+            const rejectButton = new ButtonBuilder()
+                .setCustomId("reject")
+                .setLabel("Reject")
+                .setStyle(ButtonStyle.Danger)
+
+            const embed = new EmbedBuilder()
+                .setTitle(suggestion.title)
+                .setAuthor({name: suggestion.author.global_name})
+                .addFields({name: "Details", value: suggestion.description})
+                .setTimestamp()
+            
+            const buttons = new ActionRowBuilder().addComponents(resolveButton, rejectButton)
+      
+            await message.edit({content: "", embeds: [embed], components: [buttons]})
             await interaction.reply({embeds: [embed], ephemeral: true})
         } catch(err) {
-            await interaction.reply({content: `${err}`, ephemeral: true})
+            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
+            await logError(interaction, err)
         }
     }
 }
@@ -62,7 +74,7 @@ async function addSuggestionToDatabase(suggestion, user){
     if(!author){
         await postUser(user)
     }
-    await postSuggestion(suggestion, user.id)
+    return await postSuggestion(suggestion, user.id)
 }
 
 
