@@ -1,6 +1,26 @@
 const { container } = require("@sapphire/framework")
 const { database } = container
 
+const allAttributes = {
+    user_id: true,
+    username: true,
+    global_name: true,
+    bot_user: true,
+    guilds: {
+        select: {
+            guild: true,
+            joined_at: true
+        }
+    },
+    suggestions: {
+        select: {
+            title: true,
+            description: true,
+            resolved: true,
+        }
+    }
+}
+
 function postUser(user, guild, joined_at){
     return database.user.create({
         data: {
@@ -24,18 +44,7 @@ function postUser(user, guild, joined_at){
 
 function getUserById(user_id){
     return database.user.findUnique({
-        select: {
-            user_id: true,
-            username: true,
-            global_name: true,
-            bot_user: true,
-            guilds: {
-                select: {
-                    guild: true,
-                    joined_at: true
-                }
-            }
-        },
+        select: allAttributes,
         where: {user_id}
     }).then((user) => {
         return user

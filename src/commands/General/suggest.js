@@ -1,36 +1,59 @@
-const { Command } = require("@sapphire/framework")
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
 const logError = require("../../utils/log-error")
+const { Subcommand } = require("@sapphire/plugin-subcommands")
+const { stripIndents } = require("common-tags")
 
-class SuggestCommand extends Command {
+class SuggestCommand extends Subcommand {
     constructor(context, options){
-        super(context, {...options})
+        super(context, {
+            ...options,
+            subcommands: [
+                {
+                    name: "create",
+                    chatInputRun: "chatInputCreate"
+                },
+                {
+                    name: "view",
+                    chatInputRun: "chatInputView"
+                }
+            ]
+        })
     }
 
     registerApplicationCommands(registry){
         registry.registerChatInputCommand((builder) => {
             builder
                 .setName("suggest")
-                .setDescription("Suggest a feature to be added to the bot")
-                .addStringOption((option) => {
-                    return option
-                        .setName("title")
-                        .setDescription("The title of your suggestion")
-                        .setRequired(true)
+                .setDescription("Manage your suggestions to the bot")
+                .addSubcommand((command) => {
+                    return command
+                        .setName("create")
+                        .setDescription("Suggest a feature to be added to the bot")
+                        .addStringOption((option) => {
+                            return option
+                                .setName("title")
+                                .setDescription("The title of your suggestion")
+                                .setRequired(true)
+                        })
+                        .addStringOption((option) => {
+                            return option
+                                .setName("description")
+                                .setDescription("Describe the main features of your suggestion")
+                                .setRequired(true)
+                        })
                 })
-                .addStringOption((option) => {
-                    return option
-                        .setName("description")
-                        .setDescription("Describe the main features of your suggestion")
-                        .setRequired(true)
+                .addSubcommand((command) => {
+                    return command
+                        .setName("view")
+                        .setDescription("View all your suggestions to the bot")
                 })
         })
     }
 
-    async chatInputRun(interaction){
+    async chatInputCreate(interaction){
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
 
@@ -65,6 +88,24 @@ class SuggestCommand extends Command {
             await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
             await logError(interaction, err)
         }
+    }
+
+    async chatInputView(interaction){
+        const {suggestions} = await getUserById(interaction.user.id)
+
+        const embed = new EmbedBuilder()
+            .setTitle("All suggestions")
+            .setAuthor({name: interaction.user.globalName})
+            .addFields(
+                ...suggestions.map((suggestion) => {
+                    return {name: suggestion.title, value: stripIndents(
+                        `${suggestion.description}
+                        *Status: ${suggestion.resolved === true ? "Resolved" : (suggestion.resolved === false ? "Rejected" : "Pending")}*`
+                    )}
+                })
+            )
+        
+        await interaction.reply({embeds: [embed]})
     }
 }
 
