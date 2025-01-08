@@ -40,15 +40,14 @@ class SuggestCommand extends Command {
             })
             const message = await suggestionsChannel.send({content: "Logging suggestion..."})
             const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction.user)
-            console.log(suggestion)
 
             const resolveButton = new ButtonBuilder()
-                .setCustomId("resolve")
+                .setCustomId("suggestion-resolve")
                 .setLabel("Resolve")
                 .setStyle(ButtonStyle.Success)
 
             const rejectButton = new ButtonBuilder()
-                .setCustomId("reject")
+                .setCustomId("suggestion-reject")
                 .setLabel("Reject")
                 .setStyle(ButtonStyle.Danger)
 
