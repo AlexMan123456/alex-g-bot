@@ -19,12 +19,12 @@ model User {
 }
 
 model Suggestion {
-  suggestion_id String  @id
+  suggestion_id String   @id
   user_id       String
-  title         String  @db.VarChar(100)
+  title         String   @db.VarChar(100)
   description   String
-  resolved      Boolean @default(false)
-  author        User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  resolved      Boolean?
+  author        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("suggestions")
 }
