@@ -26,7 +26,7 @@ class SuggestCommand extends Subcommand {
     registerApplicationCommands(registry){
         registry.registerChatInputCommand((builder) => {
             builder
-                .setName("suggest")
+                .setName("suggestions")
                 .setDescription("Manage your suggestions to the bot")
                 .addSubcommand((command) => {
                     return command
