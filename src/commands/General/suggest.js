@@ -1,5 +1,5 @@
 const { Command, container } = require("@sapphire/framework")
-const { EmbedBuilder, MessageFlags } = require("discord.js")
+const { EmbedBuilder, MessageFlags, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
 const findChannel = require("../../utils/find-channel")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
@@ -41,15 +41,28 @@ class SuggestCommand extends Command {
             return await logError(interaction, err)
         }
 
+        const resolveButton = new ButtonBuilder()
+            .setCustomId("resolve")
+            .setLabel("Resolve")
+            .setStyle(ButtonStyle.Success)
+
+        const rejectButton = new ButtonBuilder()
+            .setCustomId("reject")
+            .setLabel("Reject")
+            .setStyle(ButtonStyle.Danger)
+
         const embed = new EmbedBuilder()
             .setTitle(suggestionTitle)
             .setAuthor({name: interaction.user.globalName})
             .addFields({name: "Details", value: suggestionDescription})
             .setTimestamp()
+        
+        const buttons = new ActionRowBuilder().addComponents(resolveButton, rejectButton)
+
 
         try {
             const suggestionsChannel = await findChannel(interaction, "suggestions")
-            await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed]})
+            await interaction.guild.channels.cache.get(suggestionsChannel[0]).send({embeds: [embed], components: [buttons]})
             await interaction.reply({embeds: [embed], ephemeral: true})
         } catch(err) {
             await interaction.reply({content: `${err}`, ephemeral: true})

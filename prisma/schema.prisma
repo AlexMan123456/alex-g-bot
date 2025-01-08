@@ -19,11 +19,12 @@ model User {
 }
 
 model Suggestion {
-  suggestion_id Int    @id @default(autoincrement())
+  suggestion_id Int     @id @default(autoincrement())
   user_id       String
-  title         String @db.VarChar(100)
+  title         String  @db.VarChar(100)
   description   String
-  author        User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  resolved      Boolean @default(false)
+  author        User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("suggestions")
 }
@@ -31,8 +32,8 @@ model Suggestion {
 model Guild {
   guild_id        String           @id
   name            String
-  welcome_message String           @default("{user} has joined {guild}")
   leave_message   String           @default("{user} has left {guild}")
+  welcome_message String           @default("{user} has joined {guild}")
   users           UsersAndGuilds[]
 
   @@map("guilds")
