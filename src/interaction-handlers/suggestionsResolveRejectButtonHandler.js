@@ -3,6 +3,7 @@ const formatDateAndTime = require("../utils/format-date-and-time");
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } = require("discord.js");
 const { patchSuggestion } = require("../database-interactions/suggestions");
 const logError = require("../utils/log-error");
+const makeFirstLetterLowercase = require("../utils/make-first-letter-lowercase");
 
 class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
     constructor(context, options){
@@ -24,12 +25,14 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
             return await interaction.reply({content: "Only the owner can resolve/reject suggestions.", ephemeral: true})
         }
 
+        const resolveOrReject = interaction.customId === "suggestion-resolve" ? "Resolved" : "Rejected"
+
         try {
             const {date, time} = formatDateAndTime(new Date().toISOString())
-            const suggestion = await patchSuggestion(interaction.message.id, interaction.customId === "suggestion-resolve" ? true : false)
+            const suggestion = await patchSuggestion(interaction.message.id, resolveOrReject)
     
             const pendingButton = new ButtonBuilder()
-                .setCustomId("suggestion-pending")
+                .setCustomId("suggestion-reopen")
                 .setLabel("Re-open")
                 .setStyle(ButtonStyle.Primary)
             
@@ -39,12 +42,12 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
                 .setTitle(suggestion.title)
                 .setAuthor({name: suggestion.author.global_name})
                 .addFields({name: "Details", value: suggestion.description})
-                .setFooter({text: `${interaction.customId === "suggestion-resolve" ? "Resolved" : "Rejected"} on ${date}, ${time}`})
+                .setFooter({text: `${suggestion.status} on ${date}, ${time}`})
                 .setColor(interaction.customId === "suggestion-resolve" ? "Green" : "Red")
     
             await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
-            await interaction.reply({content: `Could not ${interaction.customId === "suggestion-resolve" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
+            await interaction.reply({content: `Could not ${resolveOrReject === "Resolved" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
             await logError(interaction, err)
         }
     }

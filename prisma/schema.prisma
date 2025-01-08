@@ -19,12 +19,12 @@ model User {
 }
 
 model Suggestion {
-  suggestion_id String   @id
+  suggestion_id String           @id
   user_id       String
-  title         String   @db.VarChar(100)
+  title         String           @db.VarChar(100)
   description   String
-  resolved      Boolean?
-  author        User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  status        SuggestionStatus @default(pending)
+  author        User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("suggestions")
 }
@@ -48,4 +48,10 @@ model UsersAndGuilds {
 
   @@id([user_id, guild_id])
   @@map("users_and_guilds")
+}
+
+enum SuggestionStatus {
+  pending
+  resolved
+  rejected
 }
