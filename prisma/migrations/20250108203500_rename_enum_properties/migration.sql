@@ -14,3 +14,6 @@ ALTER TYPE "SuggestionStatus_new" RENAME TO "SuggestionStatus";
 DROP TYPE "SuggestionStatus_old";
 ALTER TABLE "suggestions" ALTER COLUMN "status" SET DEFAULT 'Pending';
 COMMIT;
+
+-- AlterTable
+ALTER TABLE "suggestions" ALTER COLUMN "status" SET DEFAULT 'Pending';
