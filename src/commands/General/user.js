@@ -29,7 +29,7 @@ class UserCommand extends Command {
         try {
             const user = await getUserById(userFromGuild.id) ?? await postUser(userFromGuild, interaction.guild, member.joinedAt)
             const currentGuild = user.guilds.find(({guild}) => {
-                return guild.guild_id = interaction.guild.id
+                return guild.guild_id === interaction.guild.id
             })
             const {date: joinDate, time: joinTime} = formatDateAndTime(currentGuild.joined_at.toISOString())
 
