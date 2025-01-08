@@ -2,7 +2,7 @@ const { InteractionHandler, InteractionHandlerTypes } = require("@sapphire/frame
 const formatDateAndTime = require("../utils/format-date-and-time");
 const { patchSuggestion } = require("../database-interactions/suggestions");
 const { ButtonBuilder, EmbedBuilder, ActionRowBuilder } = require("@discordjs/builders");
-const { ButtonStyle } = require("discord.js");
+const { ButtonStyle, ButtonInteraction } = require("discord.js");
 const logError = require("../utils/log-error");
 
 class SuggestionsPendingButtonHandler extends InteractionHandler {
@@ -48,7 +48,7 @@ class SuggestionsPendingButtonHandler extends InteractionHandler {
                 .addFields({name: "Details", value: suggestion.description})
                 .setFooter({text: `Re-opened on ${date}, ${time}`})
     
-            await interaction.message.edit({embeds: [embed], components: [buttons]})
+            await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
             await interaction.reply({content: "Could not re-open suggestion.", ephemeral: true})
             await logError(interaction, err)
