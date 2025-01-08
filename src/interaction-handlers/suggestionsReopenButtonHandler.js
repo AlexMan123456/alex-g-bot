@@ -5,7 +5,7 @@ const { ButtonBuilder, EmbedBuilder, ActionRowBuilder } = require("@discordjs/bu
 const { ButtonStyle, ButtonInteraction } = require("discord.js");
 const logError = require("../utils/log-error");
 
-class SuggestionsPendingButtonHandler extends InteractionHandler {
+class SuggestionsReopenButtonHandler extends InteractionHandler {
     constructor(context, options){
         super(context, {
             ...options,
@@ -15,7 +15,7 @@ class SuggestionsPendingButtonHandler extends InteractionHandler {
     }
 
     parse(interaction){
-        if(interaction.customId === "suggestion-pending"){
+        if(interaction.customId === "suggestion-reopen"){
             return this.some()
         }
         return this.none()
@@ -28,7 +28,7 @@ class SuggestionsPendingButtonHandler extends InteractionHandler {
 
         try {
             const {date, time} = formatDateAndTime(new Date().toISOString())
-            const suggestion = await patchSuggestion(interaction.message.id, null)
+            const suggestion = await patchSuggestion(interaction.message.id, "Pending")
     
             const resolveButton = new ButtonBuilder()
                     .setCustomId("suggestion-resolve")
@@ -57,4 +57,4 @@ class SuggestionsPendingButtonHandler extends InteractionHandler {
     }
 }
 
-module.exports = {SuggestionsPendingButtonHandler}
+module.exports = {SuggestionsPendingButtonHandler: SuggestionsReopenButtonHandler}

@@ -56,7 +56,7 @@ class SuggestCommand extends Subcommand {
     async chatInputCreate(interaction){
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
-
+        
         try {
             const suggestionsChannel = await findChannel(interaction, "suggestions").then((channelDetails) => {
                 return interaction.guild.channels.cache.get(channelDetails[0])
@@ -92,6 +92,7 @@ class SuggestCommand extends Subcommand {
 
     async chatInputView(interaction){
         const {suggestions} = await getUserById(interaction.user.id)
+        console.log(suggestions)
 
         const embed = new EmbedBuilder()
             .setTitle("All suggestions")
@@ -100,7 +101,7 @@ class SuggestCommand extends Subcommand {
                 ...suggestions.map((suggestion) => {
                     return {name: suggestion.title, value: stripIndents(
                         `${suggestion.description}
-                        *Status: ${suggestion.resolved === true ? "Resolved" : (suggestion.resolved === false ? "Rejected" : "Pending")}*`
+                        *Status: ${suggestion.status}*`
                     )}
                 })
             )

@@ -16,7 +16,7 @@ const allAttributes = {
         select: {
             title: true,
             description: true,
-            resolved: true,
+            status: true,
         }
     }
 }

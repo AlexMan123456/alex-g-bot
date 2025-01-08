@@ -4,7 +4,7 @@ const { database } = container
 const allAttributes = {
     title: true,
     description: true,
-    resolved: true,
+    status: true,
     author: {
         select: {
             global_name: true
@@ -31,10 +31,12 @@ function getSuggestion(suggestion_id){
     })
 }
 
-function patchSuggestion(suggestion_id, resolved){
+function patchSuggestion(suggestion_id, SuggestionStatus){
     return database.suggestion.update({
         where: {suggestion_id},
-        data: {resolved},
+        data: {
+            status: SuggestionStatus.SuggestionStatus
+        },
         select: allAttributes
     }).then((suggestion) => {
         return suggestion
