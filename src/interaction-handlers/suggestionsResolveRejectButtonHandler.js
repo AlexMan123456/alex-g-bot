@@ -1,6 +1,6 @@
 const { InteractionHandler, InteractionHandlerTypes } = require("@sapphire/framework");
 const formatDateAndTime = require("../utils/format-date-and-time");
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } = require("discord.js");
 const { patchSuggestion } = require("../database-interactions/suggestions");
 const logError = require("../utils/log-error");
 
@@ -42,7 +42,7 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
                 .setFooter({text: `${interaction.customId === "suggestion-resolve" ? "Resolved" : "Rejected"} on ${date}, ${time}`})
                 .setColor(interaction.customId === "suggestion-resolve" ? "Green" : "Red")
     
-            await interaction.message.edit({embeds: [embed], components: [buttons]})
+            await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
             await interaction.reply({content: `Could not ${interaction.customId === "suggestion-resolve" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
             await logError(interaction, err)
