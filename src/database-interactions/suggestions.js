@@ -1,3 +1,4 @@
+const { SuggestionStatus } = require("@prisma/client")
 const { container } = require("@sapphire/framework")
 const { database } = container
 
@@ -31,11 +32,11 @@ function getSuggestion(suggestion_id){
     })
 }
 
-function patchSuggestion(suggestion_id, SuggestionStatus){
+function patchSuggestion(suggestion_id, status){
     return database.suggestion.update({
         where: {suggestion_id},
         data: {
-            status: SuggestionStatus.SuggestionStatus
+            status: SuggestionStatus[status]
         },
         select: allAttributes
     }).then((suggestion) => {

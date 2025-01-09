@@ -57,12 +57,12 @@ class SuggestCommand extends Subcommand {
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
         
-        try {
+        //try {
             const suggestionsChannel = await findChannel(interaction, "suggestions").then((channelDetails) => {
                 return interaction.guild.channels.cache.get(channelDetails[0])
             })
             const message = await suggestionsChannel.send({content: "Logging suggestion..."})
-            const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction.user)
+            const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction)
 
             const resolveButton = new ButtonBuilder()
                 .setCustomId("suggestion-resolve")
@@ -84,10 +84,10 @@ class SuggestCommand extends Subcommand {
       
             await message.edit({content: "", embeds: [embed], components: [buttons]})
             await interaction.reply({embeds: [embed], ephemeral: true})
-        } catch(err) {
-            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
-            await logError(interaction, err)
-        }
+        //} catch(err) {
+        //    await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
+        //    await logError(interaction, err)
+        //}
     }
 
     async chatInputView(interaction){
@@ -110,10 +110,11 @@ class SuggestCommand extends Subcommand {
     }
 }
 
-async function addSuggestionToDatabase(suggestion, user){
+async function addSuggestionToDatabase(suggestion, interaction){
+    const {user, member, guild} = interaction
     const author = await getUserById(user.id)
     if(!author){
-        await postUser(user)
+        await postUser(user, guild, member.joinedAt)
     }
     return await postSuggestion(suggestion, user.id)
 }

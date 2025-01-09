@@ -3,7 +3,7 @@ const formatDateAndTime = require("../utils/format-date-and-time");
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } = require("discord.js");
 const { patchSuggestion } = require("../database-interactions/suggestions");
 const logError = require("../utils/log-error");
-const makeFirstLetterLowercase = require("../utils/make-first-letter-lowercase");
+const makeFirstLetterUppercase = require("../utils/make-first-letter-uppercase");
 
 class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
     constructor(context, options){
@@ -25,7 +25,7 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
             return await interaction.reply({content: "Only the owner can resolve/reject suggestions.", ephemeral: true})
         }
 
-        const resolveOrReject = interaction.customId === "suggestion-resolve" ? "Resolved" : "Rejected"
+        const resolveOrReject = interaction.customId === "suggestion-resolve" ? "resolved" : "rejected"
 
         try {
             const {date, time} = formatDateAndTime(new Date().toISOString())
@@ -42,12 +42,12 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
                 .setTitle(suggestion.title)
                 .setAuthor({name: suggestion.author.global_name})
                 .addFields({name: "Details", value: suggestion.description})
-                .setFooter({text: `${suggestion.status} on ${date}, ${time}`})
-                .setColor(interaction.customId === "suggestion-resolve" ? "Green" : "Red")
+                .setFooter({text: `${makeFirstLetterUppercase(suggestion.status)} on ${date}, ${time}`})
+                .setColor(suggestion.status === "resolved" ? "Green" : "Red")
     
             await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
-            await interaction.reply({content: `Could not ${resolveOrReject === "Resolved" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
+            await interaction.reply({content: `Could not ${resolveOrReject === "resolved" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
             await logError(interaction, err)
         }
     }

@@ -28,7 +28,7 @@ class SuggestionsReopenButtonHandler extends InteractionHandler {
 
         try {
             const {date, time} = formatDateAndTime(new Date().toISOString())
-            const suggestion = await patchSuggestion(interaction.message.id, "Pending")
+            const suggestion = await patchSuggestion(interaction.message.id, "pending")
     
             const resolveButton = new ButtonBuilder()
                     .setCustomId("suggestion-resolve")
