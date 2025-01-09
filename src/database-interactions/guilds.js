@@ -38,4 +38,13 @@ function setNewLeaveMessage(guild_id, leave_message){
     })
 }
 
-module.exports = { postGuild, getGuildById, setNewWelcomeMessage, setNewLeaveMessage }
+function patchGuild(guild_id, data){
+    return database.guild.update({
+        where: {guild_id},
+        data
+    }).then((guild) => {
+        return guild
+    })
+}
+
+module.exports = { postGuild, getGuildById, setNewWelcomeMessage, setNewLeaveMessage, patchGuild }
