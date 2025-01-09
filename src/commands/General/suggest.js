@@ -5,6 +5,7 @@ const { postSuggestion } = require("../../database-interactions/suggestions")
 const logError = require("../../utils/log-error")
 const { Subcommand } = require("@sapphire/plugin-subcommands")
 const { stripIndents } = require("common-tags")
+const { getGuildById, patchGuild } = require("../../database-interactions/guilds")
 
 class SuggestCommand extends Subcommand {
     constructor(context, options){
@@ -18,6 +19,11 @@ class SuggestCommand extends Subcommand {
                 {
                     name: "view",
                     chatInputRun: "chatInputView"
+                },
+                {
+                    name: "set-channel",
+                    chatInputRun: "chatInputSetChannel",
+                    preconditions: ["OwnerOnly"]
                 }
             ]
         })
@@ -50,16 +56,32 @@ class SuggestCommand extends Subcommand {
                         .setName("view")
                         .setDescription("View all your suggestions to the bot")
                 })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("set-channel")
+                        .setDescription("(ADMIN ONLY) Set the channel you want to receive suggestions in")
+                        .addChannelOption((option) => {
+                            return option
+                                .setName("channel")
+                                .setDescription("The channel to set as the suggestions channel")
+                                .setRequired(true)
+                        })
+                })
         })
     }
 
     async chatInputCreate(interaction){
+        const suggestionsChannelSet = await isSuggestionsChannelSet(interaction.guild.id)
+        if(!suggestionsChannelSet){
+            return await interaction.reply("Suggestions channel not set.")
+        }
+
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
         
         try {
-            const suggestionsChannel = await findChannel(interaction, "suggestions").then((channelDetails) => {
-                return interaction.guild.channels.cache.get(channelDetails[0])
+            const suggestionsChannel = await getGuildById(interaction.guild.id).then((guild) => {
+                return interaction.guild.channels.cache.get(guild.suggestions_channel_id)
             })
             const message = await suggestionsChannel.send({content: "Logging suggestion..."})
             const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction)
@@ -92,7 +114,6 @@ class SuggestCommand extends Subcommand {
 
     async chatInputView(interaction){
         const {suggestions} = await getUserById(interaction.user.id)
-        console.log(suggestions)
 
         const embed = new EmbedBuilder()
             .setTitle("All suggestions")
@@ -108,6 +129,18 @@ class SuggestCommand extends Subcommand {
         
         await interaction.reply({embeds: [embed]})
     }
+
+    async chatInputSetChannel(interaction){
+        const suggestionsChannel = interaction.options.getChannel("channel")
+        try {
+            await patchGuild(interaction.guild.id, {suggestions_channel_id: suggestionsChannel.id})
+            await interaction.reply(`Suggestions channel set to <#${suggestionsChannel.id}>`)
+        } catch(err) {
+            await interaction.reply("Could not set suggestions channel.")
+            await logError(interaction, err)
+        }
+
+    }
 }
 
 async function addSuggestionToDatabase(suggestion, interaction){
@@ -117,6 +150,11 @@ async function addSuggestionToDatabase(suggestion, interaction){
         await postUser(user, guild, member.joinedAt)
     }
     return await postSuggestion(suggestion, user.id)
+}
+
+async function isSuggestionsChannelSet(guild_id){
+    const guild = await getGuildById(guild_id)
+    return guild.suggestions_channel_id ? true : false
 }
 
 
