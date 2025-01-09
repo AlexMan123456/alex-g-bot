@@ -57,7 +57,7 @@ class SuggestCommand extends Subcommand {
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
         
-        //try {
+        try {
             const suggestionsChannel = await findChannel(interaction, "suggestions").then((channelDetails) => {
                 return interaction.guild.channels.cache.get(channelDetails[0])
             })
@@ -84,10 +84,10 @@ class SuggestCommand extends Subcommand {
       
             await message.edit({content: "", embeds: [embed], components: [buttons]})
             await interaction.reply({embeds: [embed], ephemeral: true})
-        //} catch(err) {
-        //    await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
-        //    await logError(interaction, err)
-        //}
+        } catch(err) {
+            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
+            await logError(interaction, err)
+        }
     }
 
     async chatInputView(interaction){
