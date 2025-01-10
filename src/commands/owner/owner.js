@@ -1,11 +1,11 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
-const queryDatabase = require("../../subcommand-logic/owner/query-database.js");
-const evalCommand = require("../../subcommand-logic/owner/eval.js");
-const addUserToDatabase = require("../../subcommand-logic/owner/add-user-to-db.js");
-const addGuildToDatabase = require("../../subcommand-logic/owner/add-guild-to-db.js");
-const addUserToGuild = require("../../subcommand-logic/owner/add-user-to-guild.js");
-const setWelcomeMessage = require("../../subcommand-logic/owner/set-welcome-message.js");
-const setLeaveMessage = require("../../subcommand-logic/owner/set-leave-message.js");
+const queryDatabase = require("../../miscellaneous/owner-subcommands/query-database");
+const evalCommand = require("../../miscellaneous/owner-subcommands/eval");
+const addUserToDatabase = require("../../miscellaneous/owner-subcommands/add-user-to-db");
+const addGuildToDatabase = require("../../miscellaneous/owner-subcommands/add-guild-to-db");
+const addUserToGuild = require("../../miscellaneous/owner-subcommands/add-user-to-guild");
+const setWelcomeMessage = require("../../miscellaneous/owner-subcommands/set-welcome-message");
+const setLeaveMessage = require("../../miscellaneous/owner-subcommands/set-leave-message");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
