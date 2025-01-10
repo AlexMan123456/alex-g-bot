@@ -5,10 +5,10 @@ class UserEvent extends Listener {
     constructor(context, options){
         super(context, {
             ...options,
-            event: "chatInputCommandDenied"
+            event: "chatInputSubcommandDenied"
         })
     }
-
+    
     async run(error, {interaction}){
         return await denyChatInputCommand(error, interaction)
     }

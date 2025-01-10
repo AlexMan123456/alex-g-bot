@@ -27,7 +27,7 @@ class UserPrecondition extends AllFlowsPrecondition {
 	 * @param {import('discord.js').Snowflake} userId
 	 */
 	doOwnerCheck(userId) {
-		return process.env.OWNER_ID === userId ? this.ok() : this.error({ message });
+		return process.env.OWNER_ID === userId ? this.ok() : this.error({ message, context: {ephemeral: true} });
 	}
 }
 
