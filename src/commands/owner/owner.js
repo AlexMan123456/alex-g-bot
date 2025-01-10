@@ -6,6 +6,8 @@ const addGuildToDatabase = require("../../miscellaneous/owner-subcommands/add-gu
 const addUserToGuild = require("../../miscellaneous/owner-subcommands/add-user-to-guild");
 const setWelcomeMessage = require("../../miscellaneous/owner-subcommands/set-welcome-message");
 const setLeaveMessage = require("../../miscellaneous/owner-subcommands/set-leave-message");
+const { patchGuild } = require("../../database-interactions/guilds");
+const logError = require("../../utils/log-error");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -46,6 +48,10 @@ class OwnerCommand extends Subcommand {
                 {
                     name: "set-leave-message",
                     chatInputRun: "chatInputSetLeaveMessage"
+                },
+                {
+                    name: "set-mod-role",
+                    chatInputRun: "chatInputSetModRole"
                 }
             ]
         })
@@ -105,12 +111,13 @@ class OwnerCommand extends Subcommand {
                 })
                 .addSubcommand((command) => {
                     return command
-                        .setName("set-leave-message")
-                        .setDescription("Set a custom leave message for your guild")
-                        .addStringOption((option) => {
+                        .setName("set-mod-role")
+                        .setDescription("Set the mod role of your server")
+                        .addRoleOption((option) => {
                             return option
-                                .setName("message")
-                                .setDescription("The new leave message (leave blank to reset to default)")
+                                .setName("role")
+                                .setDescription("The role to set as a mod role")
+                                .setRequired(true)
                         })
                 })
         })
@@ -144,12 +151,16 @@ class OwnerCommand extends Subcommand {
         await addUserToGuild(interaction)
     }
 
-    async chatInputSetWelcomeMessage(interaction){
-        await setWelcomeMessage(interaction)
-    }
-
-    async chatInputSetLeaveMessage(interaction){
-        await setLeaveMessage(interaction)
+    async chatInputSetModRole(interaction){
+        const {id: mod_role_id} = interaction.options.getRole("role")
+        
+        try {
+            await patchGuild(interaction.guild.id, {mod_role_id})
+            await interaction.reply(`Mod role set to <@&${mod_role_id}>.`)
+        } catch(err) {
+            await interaction.reply("Could not set mod role.")
+            await logError(interaction, err)
+        }
     }
 }
 

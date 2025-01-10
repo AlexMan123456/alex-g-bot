@@ -3,7 +3,10 @@ const setLeaveMessage = require("../../miscellaneous/owner-subcommands/set-leave
 
 class LeaveCommand extends Command {
     constructor(context, options){
-        super(context, {...options})
+        super(context, {
+            ...options,
+            preconditions: [["OwnerOnly", "ModOnly"]]
+        })
     }
 
     registerApplicationCommands(registry){

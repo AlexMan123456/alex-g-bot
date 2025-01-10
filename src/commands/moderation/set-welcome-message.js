@@ -3,7 +3,10 @@ const setWelcomeMessage = require("../../miscellaneous/owner-subcommands/set-wel
 
 class WelcomeCommand extends Command {
     constructor(context, options){
-        super(context, {...options})
+        super(context, {
+            ...options,
+            preconditions: [["OwnerOnly", "ModOnly"]]
+        })
     }
 
     registerApplicationCommands(registry){
