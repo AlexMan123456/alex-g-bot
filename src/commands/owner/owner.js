@@ -105,16 +105,6 @@ class OwnerCommand extends Subcommand {
                 })
                 .addSubcommand((command) => {
                     return command
-                        .setName("set-welcome-message")
-                        .setDescription("Set a custom welcome message for your guild")
-                        .addStringOption((option) => {
-                            return option
-                                .setName("message")
-                                .setDescription("The new welcome message (leave blank to reset to default)")
-                        })
-                })
-                .addSubcommand((command) => {
-                    return command
                         .setName("set-leave-message")
                         .setDescription("Set a custom leave message for your guild")
                         .addStringOption((option) => {
