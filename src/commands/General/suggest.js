@@ -14,7 +14,8 @@ class SuggestCommand extends Subcommand {
             subcommands: [
                 {
                     name: "create",
-                    chatInputRun: "chatInputCreate"
+                    chatInputRun: "chatInputCreate",
+                    preconditions: ["SuggestionsChannelSet"]
                 },
                 {
                     name: "view",
@@ -71,10 +72,10 @@ class SuggestCommand extends Subcommand {
     }
 
     async chatInputCreate(interaction){
-        const suggestionsChannelSet = await isSuggestionsChannelSet(interaction.guild.id)
+        /*const suggestionsChannelSet = await isSuggestionsChannelSet(interaction.guild.id)
         if(!suggestionsChannelSet){
             return await interaction.reply("Suggestions channel not set.")
-        }
+        }*/
 
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
