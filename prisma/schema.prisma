@@ -36,6 +36,9 @@ model Guild {
   welcome_message        String           @default("{user} has joined {guild}")
   suggestions_channel_id String?
   mod_role_id            String?
+  error_log_channel_id   String?
+  leave_channel_id       String?
+  welcome_channel_id     String?
   users                  UsersAndGuilds[]
 
   @@map("guilds")
