@@ -45,11 +45,13 @@ model Guild {
 }
 
 model UsersAndGuilds {
-  user_id   String
-  guild_id  String
-  joined_at DateTime
-  guild     Guild    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id       String
+  guild_id      String
+  joined_at     DateTime
+  money_current Int?     @default(100)
+  money_savings Int?     @default(0)
+  guild         Guild    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([user_id, guild_id])
   @@map("users_and_guilds")

@@ -21,4 +21,59 @@ function addUserAndGuildRelation(user_id, guild_id, joined_at){
     })
 }
 
-module.exports = {removeUserFromGuild, addUserAndGuildRelation}
+function patchUserAndGuildRelation(user_id, guild_id, data){
+    return database.usersAndGuilds.update({
+        where: {
+            user_id_guild_id: {
+                user_id, guild_id
+            }
+        },
+        data,
+        select: {
+            user: {
+                select: {
+                    user_id: true,
+                    username: true
+                }
+            },
+            guild: {
+                select: {
+                    guild_id: true,
+                    name: true
+                }
+            },
+            money_current: true,
+            money_savings: true
+        }
+    }).then((relation) => {
+        return relation
+    })
+}
+
+function getUserAndGuildRelation(user_id, guild_id){
+    return database.usersAndGuilds.findUnique({
+        select: {
+            user: {
+                select: {
+                    user_id: true,
+                    username: true
+                }
+            },
+            guild: {
+                select: {
+                    guild_id: true,
+                    name: true
+                }
+            },
+            money_current: true,
+            money_savings: true
+        },
+        where: {
+            user_id_guild_id: {
+                user_id, guild_id
+            }
+        }
+    })
+}
+
+module.exports = {removeUserFromGuild, addUserAndGuildRelation, patchUserAndGuildRelation, getUserAndGuildRelation}
