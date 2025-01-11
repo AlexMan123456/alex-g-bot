@@ -1,7 +1,6 @@
 const { Listener } = require("@sapphire/framework")
 const { postUser, getUserById } = require("../database-interactions/users.js")
 const { addUserAndGuildRelation } = require("../database-interactions/usersAndGuilds.js")
-const findChannel = require("../utils/find-channel.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
 const logError = require("../utils/log-error.js")
@@ -24,20 +23,20 @@ class UserListener extends Listener {
         } catch(err) {
             return await logError(client, err)
         }
-
-        const welcomeLeaveChannel = await findChannel(client, "welcome-leave").then((channelData) => {
-            return client.guild.channels.cache.get(channelData[0])
-        })
-
-        const welcomeMessage = await getGuildById(client.guild.id).then((guild) => {
-            return formatUserGuildMessage(guild.welcome_message, `<@${client.user.id}>`, client.guild.name)
-        })
-
+        
         try {
-            await welcomeLeaveChannel.send(welcomeMessage)
+            const guild = await getGuildById(client.guild.id)
+            if(!guild.welcome_channel_id){
+                return
+            }
+            const welcomeChannel = await client.guild.channels.cache.get(guild.welcome_channel_id)
+            const welcomeMessage = formatUserGuildMessage(guild.welcome_message, `<@${client.user.id}>`, client.guild.name)
+            await welcomeChannel.send(welcomeMessage)
         } catch(err) {
             try {
-                await welcomeLeaveChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
+                const guild = await getGuildById(client.guild.id)
+                const welcomeChannel = await client.guild.channels.cache.get(guild.welcome_channel_id)
+                await welcomeChannel.send(formatUserGuildMessage(guild.welcome_message, client.user.username, client.guild.name))
             } catch(err) {
                 await logError(client, err)
             }

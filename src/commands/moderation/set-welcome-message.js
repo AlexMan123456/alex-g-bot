@@ -1,5 +1,7 @@
 const { Command } = require("@sapphire/framework");
-const setWelcomeMessage = require("../../miscellaneous/owner-subcommands/set-welcome-message");
+const { patchGuild } = require("../../database-interactions/guilds");
+const logError = require("../../utils/log-error");
+const { stripIndents } = require("common-tags");
 
 class WelcomeCommand extends Command {
     constructor(context, options){
@@ -23,7 +25,17 @@ class WelcomeCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        return await setWelcomeMessage(interaction)
+        const welcome_message = interaction.options.getString("message") ?? "{user} has joined {guild}"
+        try {
+            const guild = await patchGuild(interaction.guild.id, {welcome_message})
+            await interaction.reply(
+                stripIndents(`**New Welcome Message**
+                ${guild.welcome_message}
+                `))
+        } catch(err) {
+            await interaction.reply({content: "Error setting welcome message.", ephemeral: true})
+            await logError(interaction, err)
+        }
     }
 }
 

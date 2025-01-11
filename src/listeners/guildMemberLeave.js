@@ -1,7 +1,5 @@
 const { Listener } = require("@sapphire/framework")
-const { postUser, getUserById } = require("../database-interactions/users.js")
 const { removeUserFromGuild } = require("../database-interactions/usersAndGuilds.js")
-const findChannel = require("../utils/find-channel.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
 const logError = require("../utils/log-error.js")
@@ -22,15 +20,13 @@ class UserListener extends Listener {
         }
         
         try {
-            const welcomeLeaveChannel = await findChannel(client, "welcome-leave").then((channelData) => {
-                return client.guild.channels.cache.get(channelData[0])
-            })
-    
-            const leaveMessage = await getGuildById(client.guild.id).then((guild) => {
-                return formatUserGuildMessage(guild.leave_message, client.user.username, client.guild.name)
-            })
-    
-            await welcomeLeaveChannel.send(leaveMessage)
+            const guild = await getGuildById(client.guild.id)
+            if(!guild.leave_channel_id){
+                return
+            }
+            const leaveChannel = await client.guild.channels.cache.get(guild.leave_channel_id)
+            const leaveMessage = formatUserGuildMessage(guild.leave_message, client.user.username, client.guild.name)
+            await leaveChannel.send(leaveMessage)
         } catch(err) {
             await logError(client, err)
         }

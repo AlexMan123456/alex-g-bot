@@ -39,7 +39,7 @@
     "generate": "sapphire generate",
     "watch": "nodemon -L --watch src",
     "start": "node src/run-prod-bot.js",
-    "dev": "node src/run-dev-bot.js",
+    "dev": "nodemon src/run-dev-bot.js",
     "format": "prettier --write \"src/**/*.js\""
   },
   "prettier": "@sapphire/prettier-config"

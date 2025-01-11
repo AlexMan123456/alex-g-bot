@@ -24,7 +24,7 @@ class SuggestCommand extends Subcommand {
                 {
                     name: "set-channel",
                     chatInputRun: "chatInputSetChannel",
-                    preconditions: ["OwnerOnly"]
+                    preconditions: [["OwnerOnly", "ModOnly"]]
                 }
             ]
         })
@@ -135,7 +135,7 @@ class SuggestCommand extends Subcommand {
         const suggestionsChannel = interaction.options.getChannel("channel")
         try {
             await patchGuild(interaction.guild.id, {suggestions_channel_id: suggestionsChannel.id})
-            await interaction.reply(`Suggestions channel set to <#${suggestionsChannel.id}>`)
+            await interaction.reply(`Suggestions channel set to <#${suggestionsChannel.id}>.`)
         } catch(err) {
             await interaction.reply("Could not set suggestions channel.")
             await logError(interaction, err)

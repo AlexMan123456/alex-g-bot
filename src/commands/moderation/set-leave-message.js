@@ -1,5 +1,7 @@
 const { Command } = require("@sapphire/framework");
-const setLeaveMessage = require("../../miscellaneous/owner-subcommands/set-leave-message");
+const { stripIndents } = require("common-tags");
+const logError = require("../../utils/log-error");
+const { patchGuild } = require("../../database-interactions/guilds");
 
 class LeaveCommand extends Command {
     constructor(context, options){
@@ -23,7 +25,17 @@ class LeaveCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        return await setLeaveMessage(interaction)
+        const leave_message = interaction.options.getString("message") ?? "{user} has left {guild}"
+        try {
+            const guild = await patchGuild(interaction.guild.id, {leave_message})
+            await interaction.reply(
+                stripIndents(`**New Leave Message**
+                ${guild.leave_message}
+                `))
+        } catch(err) {
+            await interaction.reply({content: "Error setting leave message.", ephemeral: true})
+            await logError(interaction, err)
+        }
     }
 }
 

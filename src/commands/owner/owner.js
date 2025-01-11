@@ -4,8 +4,6 @@ const evalCommand = require("../../miscellaneous/owner-subcommands/eval");
 const addUserToDatabase = require("../../miscellaneous/owner-subcommands/add-user-to-db");
 const addGuildToDatabase = require("../../miscellaneous/owner-subcommands/add-guild-to-db");
 const addUserToGuild = require("../../miscellaneous/owner-subcommands/add-user-to-guild");
-const setWelcomeMessage = require("../../miscellaneous/owner-subcommands/set-welcome-message");
-const setLeaveMessage = require("../../miscellaneous/owner-subcommands/set-leave-message");
 const { patchGuild } = require("../../database-interactions/guilds");
 const logError = require("../../utils/log-error");
 
