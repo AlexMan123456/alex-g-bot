@@ -19,6 +19,11 @@ class EconCommand extends Subcommand {
                 {
                     name: "balance",
                     chatInputRun: "chatInputBalance"
+                },
+                {
+                    name: "daily-bonus",
+                    chatInputRun: "chatInputDailyBonus",
+                    cooldownDelay: 10000
                 }
             ]
         })
@@ -54,7 +59,12 @@ class EconCommand extends Subcommand {
                         .setName("balance")
                         .setDescription("See your current balance")
                 })
-        })
+                .addSubcommand((command) => {
+                    return command
+                        .setName("daily-bonus")
+                        .setDescription("Claim your daily bonus")
+                })
+            })
     }
 
     async chatInputDeposit(interaction){
@@ -132,6 +142,29 @@ class EconCommand extends Subcommand {
             await logError(interaction, err)
         }
     }
+
+    async chatInputDailyBonus(interaction){
+        try {
+            const {money_current: previousCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
+
+            const newCurrent = previousCurrent + 100
+
+            await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent})
+
+            const embed = new EmbedBuilder()
+                .setTitle("Daily bonus claimed")
+                .setAuthor({name: interaction.user.globalName})
+                .setColor("Green")
+                .addFields(
+                    {name: "Current", value: `${previousCurrent} → ${newCurrent}`}
+                )
+            
+                await interaction.reply({embeds: [embed]})
+        } catch(err) {
+            await interaction.reply({content: "Could not claim daily bonus.", ephemeral: true})
+            await logError(interaction, err)
+        }
+    }
 }
 
-module.exports = EconCommand
+module.exports = {EconCommand}
