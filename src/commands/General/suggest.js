@@ -1,5 +1,4 @@
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
-const findChannel = require("../../utils/find-channel")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
 const logError = require("../../utils/log-error")
@@ -72,11 +71,6 @@ class SuggestCommand extends Subcommand {
     }
 
     async chatInputCreate(interaction){
-        /*const suggestionsChannelSet = await isSuggestionsChannelSet(interaction.guild.id)
-        if(!suggestionsChannelSet){
-            return await interaction.reply("Suggestions channel not set.")
-        }*/
-
         const suggestionTitle = interaction.options.getString("title")
         const suggestionDescription = interaction.options.getString("description")
         
@@ -151,11 +145,6 @@ async function addSuggestionToDatabase(suggestion, interaction){
         await postUser(user, guild, member.joinedAt)
     }
     return await postSuggestion(suggestion, user.id)
-}
-
-async function isSuggestionsChannelSet(guild_id){
-    const guild = await getGuildById(guild_id)
-    return guild.suggestions_channel_id ? true : false
 }
 
 

@@ -1,6 +1,6 @@
 const { Listener } = require("@sapphire/framework")
 const { postUser, getUserById } = require("../database-interactions/users.js")
-const { addUserAndGuildRelation } = require("../database-interactions/usersAndGuilds.js")
+const { addUserAndGuildRelation } = require("../database-interactions/users-and-guilds.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
 const logError = require("../utils/log-error.js")

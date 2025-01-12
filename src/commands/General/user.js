@@ -1,8 +1,6 @@
 const { EmbedBuilder } = require("@discordjs/builders")
 const { Command } = require("@sapphire/framework")
-const { MessageFlags } = require("discord.js")
 const { getUserById, postUser } = require("../../database-interactions/users.js")
-const { getGuildById } = require("../../database-interactions/guilds.js")
 const formatDateAndTime = require("../../utils/format-date-and-time.js")
 const logError = require("../../utils/log-error.js")
 
