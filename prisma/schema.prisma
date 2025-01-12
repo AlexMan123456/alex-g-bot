@@ -45,16 +45,28 @@ model Guild {
 }
 
 model UsersAndGuilds {
-  user_id       String
-  guild_id      String
-  joined_at     DateTime
-  money_current Int?     @default(100)
-  money_savings Int?     @default(0)
-  guild         Guild    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id           String
+  guild_id          String
+  joined_at         DateTime
+  money_current     Int?               @default(100)
+  money_savings     Int?               @default(0)
+  command_cooldowns CommandCooldowns[]
+  guild             Guild              @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  user              User               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([user_id, guild_id])
   @@map("users_and_guilds")
+}
+
+model CommandCooldowns {
+  user_id         String
+  guild_id        String
+  name            String
+  cooldown_expiry DateTime
+  command_id      Int            @id @default(autoincrement())
+  user_in_guild   UsersAndGuilds @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: Cascade)
+
+  @@map("command_cooldowns")
 }
 
 enum SuggestionStatus {

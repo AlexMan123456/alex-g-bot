@@ -1,5 +1,5 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
-const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../../database-interactions/usersAndGuilds");
+const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../../database-interactions/users-and-guilds");
 const { EmbedBuilder } = require("discord.js");
 const logError = require("../../utils/log-error");
 const getRandomNumber = require("../../utils/get-random-number");
@@ -24,7 +24,7 @@ class EconCommand extends Subcommand {
                 {
                     name: "daily-bonus",
                     chatInputRun: "chatInputDailyBonus",
-                    cooldownDelay: 10000
+                    preconditions: ["CommandCooldown"]
                 }
             ]
         })

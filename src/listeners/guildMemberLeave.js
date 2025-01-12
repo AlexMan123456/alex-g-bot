@@ -1,5 +1,5 @@
 const { Listener } = require("@sapphire/framework")
-const { removeUserFromGuild } = require("../database-interactions/usersAndGuilds.js")
+const { removeUserFromGuild } = require("../database-interactions/users-and-guilds.js")
 const formatUserGuildMessage = require("../utils/format-user-guild-message.js")
 const { getGuildById } = require("../database-interactions/guilds.js")
 const logError = require("../utils/log-error.js")
