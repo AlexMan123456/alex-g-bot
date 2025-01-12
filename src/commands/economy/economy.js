@@ -2,6 +2,7 @@ const { Subcommand } = require("@sapphire/plugin-subcommands");
 const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../../database-interactions/usersAndGuilds");
 const { EmbedBuilder } = require("discord.js");
 const logError = require("../../utils/log-error");
+const getRandomNumber = require("../../utils/get-random-number");
 
 class EconCommand extends Subcommand {
     constructor(context, options){
@@ -146,13 +147,14 @@ class EconCommand extends Subcommand {
     async chatInputDailyBonus(interaction){
         try {
             const {money_current: previousCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
+            const increment = getRandomNumber(1,100)
 
-            const newCurrent = previousCurrent + 100
+            const newCurrent = previousCurrent + increment
 
             await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent})
 
             const embed = new EmbedBuilder()
-                .setTitle("Daily bonus claimed")
+                .setTitle(`Daily bonus claimed: +${increment}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
