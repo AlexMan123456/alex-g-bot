@@ -29,14 +29,15 @@ class UserPrecondition extends Precondition {
         return await postCommandCooldown(commandName, interaction.user.id, interaction.guild.id, getCooldownExpiry(commandName))
     }
 
-    async checkCooldownExpired(interaction, cooldown_expiry){
-        const {date: expiryDate, time: expiryTime} = formatDateAndTime(cooldown_expiry.toISOString())
+    async checkCooldownExpired(interaction, cooldownExpiry){
+        const commandName = getFullCommandName(interaction.command.name, interaction.options._subcommand)
+        const {date: expiryDate, time: expiryTime} = formatDateAndTime(cooldownExpiry.toISOString())
         try {
-            if(Date.now() >= cooldown_expiry){
-                await deleteCommandCooldown(interaction.user.id, interaction.guild.id)
+            if(Date.now() >= cooldownExpiry){
+                await deleteCommandCooldown(interaction.user.id, interaction.guild.id, commandName)
                 return this.ok()
             }
-            return this.error({message: `This command is on a cooldown. Please try again on ${expiryDate}, ${expiryTime}`, context: {ephemeral: true}})
+            return this.error({message: `This command is on a cooldown until ${expiryDate}, ${expiryTime}. Please try again <t:${new Date(cooldownExpiry.getTime()/1000).getTime()}:R>`, context: {ephemeral: true}})
         } catch(err) {
             await logError(interaction, err)
             return this.error({message: "Could not get cooldown for this command.", context: {ephemeral: true}})
