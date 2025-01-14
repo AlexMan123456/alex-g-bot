@@ -54,14 +54,6 @@ class ApiCommand extends Subcommand {
         if(outputMessage.length > 2000){
             outputMessage = outputMessage.slice(0,1994) + "...```"
         }
-        /*const embed = new EmbedBuilder()
-        .setTitle(colour === "Green" ? "API request successful" : "Error making API request")
-        .setAuthor({name: interaction.user.globalName})
-        .addFields(
-            {name: "Request", value: "```" + apiLink + "```"},
-            {name: "Response", value: "```js\n" + JSON.stringify(data, null, 2) + "```"}
-        )
-        .setColor(colour)*/
 
         await interaction.reply(outputMessage)
     }
