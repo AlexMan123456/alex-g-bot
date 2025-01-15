@@ -75,7 +75,7 @@ class QuizCommand extends Command {
     }
 
     getDifficulty(interaction){
-        const chosenOption = interaction.options.getString("difficulty")
+        const chosenOption = interaction.options.getString("difficulty") ?? ""
         const validDifficulties = ["easy", "medium", "hard"]
         if(validDifficulties.includes(chosenOption.toLowerCase())){
             return chosenOption.toLowerCase()
