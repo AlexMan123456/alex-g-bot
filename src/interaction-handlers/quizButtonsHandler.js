@@ -44,6 +44,7 @@ class QuizButtonsHandler extends InteractionHandler {
             .setDescription(question)
             .addFields(...embedFields)
             .setColor(isChoiceCorrect ? "Green" : "Red")
+            .setFooter({text: interaction.message.embeds[0].footer.text})
     
             await interaction.update({embeds: [embed], components: []})
         } catch(err) {
