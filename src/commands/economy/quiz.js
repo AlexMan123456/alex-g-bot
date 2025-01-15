@@ -18,28 +18,42 @@ class QuizCommand extends Command {
             return builder
             .setName("quiz")
             .setDescription("Answer a random trivia question to earn some money")
+            .addStringOption((option) => {
+                return option
+                .setName("difficulty")
+                .setDescription("Choose a difficulty level (easy, medium, hard)")
+            })
         })
     }
 
     async chatInputRun(interaction){
         try {
-            const {data} = await axios.get("https://opentdb.com/api.php?amount=1")
+            const chosenDifficulty = this.getDifficulty(interaction)
+            let apiLink = "https://opentdb.com/api.php?amount=1"
+
+            if(chosenDifficulty){
+                apiLink = apiLink + `&difficulty=${chosenDifficulty}`
+            }
+
+            const {data} = await axios.get(apiLink)
             const quizQuestion = data.results[0]
             const allAnswers = this.setupAnswers(quizQuestion.incorrect_answers, quizQuestion.correct_answer)
+
+            const optionChoices = ["A", "B", "C", "D"]
     
             const embed = new EmbedBuilder()
             .setTitle(he.decode(quizQuestion.question))
             .setAuthor({name: interaction.user.globalName})
             .setFooter({text: `Difficulty: ${quizQuestion.difficulty}`})
             .addFields(
-                ...["A", "B", "C", "D"].map((optionChoice, index) => {
+                ...optionChoices.map((optionChoice, index) => {
                     return {name: optionChoice, value: he.decode(allAnswers[index])}
                 })
             )
-            .setColor("Orange")
+            .setColor(this.getEmbedColour(quizQuestion.difficulty))
     
             const buttons = new ActionRowBuilder().addComponents(
-                ...["A", "B", "C", "D"].map((optionChoice, index) => {
+                ...optionChoices.map((optionChoice, index) => {
                     return new ButtonBuilder()
                     .setCustomId(`quiz-option-${optionChoice + (allAnswers[index] === quizQuestion.correct_answer ? "-correct" : "")}`)
                     .setLabel(optionChoice)
@@ -58,6 +72,25 @@ class QuizCommand extends Command {
         const allAnswers = [...incorrectAnswers]
         allAnswers.push(correctAnswer)
         return randomiseArray(allAnswers)
+    }
+
+    getDifficulty(interaction){
+        const chosenOption = interaction.options.getString("difficulty")
+        const validDifficulties = ["easy", "medium", "hard"]
+        if(validDifficulties.includes(chosenOption.toLowerCase())){
+            return chosenOption.toLowerCase()
+        }
+        return ""
+    }
+
+    getEmbedColour(difficulty){
+        if(difficulty === "easy"){
+            return "Blue"
+        }
+        if(difficulty === "medium"){
+            return "Orange"
+        }
+        return "DarkRed"
     }
 }
 
