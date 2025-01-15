@@ -6,7 +6,10 @@ const he = require("he")
 
 class QuizCommand extends Command {
     constructor(context, options){
-        super(context, {...options})
+        super(context, {
+            ...options,
+            cooldownDelay: 10000
+        })
     }
 
     registerApplicationCommands(registry){
@@ -28,7 +31,7 @@ class QuizCommand extends Command {
         .setFooter({text: `Difficulty: ${quizQuestion.difficulty}`})
         .addFields(
             ...["A", "B", "C", "D"].map((optionChoice, index) => {
-                return {name: optionChoice, value: allAnswers[index]}
+                return {name: optionChoice, value: he.decode(allAnswers[index])}
             })
         )
         

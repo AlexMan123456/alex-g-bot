@@ -8,6 +8,10 @@ async function denyChatInputCommand(error, interaction){
         }
     }
 
+    if(error.identifier === "preconditionCooldown"){
+        reply.ephemeral = true
+    }
+
     if(interaction.deferred || interaction.replied){
         return await interaction.editReply(reply)        
     }
