@@ -83,7 +83,7 @@ class EconCommand extends Subcommand {
             await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent, money_savings: newSavings})
 
             const embed = new EmbedBuilder()
-                .setTitle("Money deposited")
+                .setTitle(`Deposited ${depositAmount}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
@@ -109,7 +109,7 @@ class EconCommand extends Subcommand {
             await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent, money_savings: newSavings})
 
             const embed = new EmbedBuilder()
-                .setTitle("Money withdrawn")
+                .setTitle(`Withdrawn ${withdrawAmount}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
