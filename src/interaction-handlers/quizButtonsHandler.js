@@ -3,6 +3,7 @@ const { EmbedBuilder } = require("discord.js");
 const getRandomNumber = require("../utils/get-random-number");
 const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../database-interactions/users-and-guilds");
 const logError = require("../utils/log-error");
+const { getGuildById } = require("../database-interactions/guilds");
 
 class QuizButtonsHandler extends InteractionHandler {
     constructor(context, options){
@@ -35,7 +36,8 @@ class QuizButtonsHandler extends InteractionHandler {
                 const {money_current: previousAmount} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
                 const newAmount = previousAmount + amountEarned
                 await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newAmount})
-                embedFields.push({name: `You have earned ${amountEarned}`, value: `**Current**: ${previousAmount} → ${newAmount}`})
+                const {currency_symbol} = await getGuildById(interaction.guild.id)
+                embedFields.push({name: `You have earned ${currency_symbol}${amountEarned}`, value: `**Current**: ${currency_symbol}${previousAmount} → ${currency_symbol}${newAmount}`})
             }
             
             const embed = new EmbedBuilder()
@@ -44,6 +46,7 @@ class QuizButtonsHandler extends InteractionHandler {
             .setDescription(question)
             .addFields(...embedFields)
             .setColor(isChoiceCorrect ? "Green" : "Red")
+            .setFooter({text: interaction.message.embeds[0].footer.text})
     
             await interaction.update({embeds: [embed], components: []})
         } catch(err) {
