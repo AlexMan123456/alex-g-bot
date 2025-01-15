@@ -39,6 +39,7 @@ model Guild {
   leave_channel_id       String?
   welcome_channel_id     String?
   error_log_id           String?
+  currency_symbol        String           @default("£")
   users                  UsersAndGuilds[]
 
   @@map("guilds")
