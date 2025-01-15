@@ -26,7 +26,6 @@ class QuizCommand extends Command {
             const {data} = await axios.get("https://opentdb.com/api.php?amount=1")
             const quizQuestion = data.results[0]
             const allAnswers = this.setupAnswers(quizQuestion.incorrect_answers, quizQuestion.correct_answer)
-            console.log(quizQuestion.correct_answer)
     
             const embed = new EmbedBuilder()
             .setTitle(he.decode(quizQuestion.question))
