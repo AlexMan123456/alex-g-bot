@@ -22,7 +22,8 @@
     "common-tags": "^1.8.2",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.7",
-    "dotenv-cli": "^7.4.4"
+    "dotenv-cli": "^7.4.4",
+    "he": "^1.2.0"
   },
   "devDependencies": {
     "@sapphire/cli": "^1.9.3",
