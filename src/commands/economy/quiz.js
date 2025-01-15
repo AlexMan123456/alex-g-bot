@@ -3,6 +3,7 @@ const axios = require("axios")
 const randomiseArray = require("../../utils/randomise-array")
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js")
 const he = require("he")
+const logError = require("../../utils/log-error")
 
 class QuizCommand extends Command {
     constructor(context, options){
@@ -21,30 +22,37 @@ class QuizCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        const {data} = await axios.get("https://opentdb.com/api.php?amount=1")
-        const quizQuestion = data.results[0]
-        const allAnswers = this.setupAnswers(quizQuestion.incorrect_answers, quizQuestion.correct_answer)
-
-        const embed = new EmbedBuilder()
-        .setTitle(he.decode(quizQuestion.question))
-        .setAuthor({name: interaction.user.globalName})
-        .setFooter({text: `Difficulty: ${quizQuestion.difficulty}`})
-        .addFields(
-            ...["A", "B", "C", "D"].map((optionChoice, index) => {
-                return {name: optionChoice, value: he.decode(allAnswers[index])}
-            })
-        )
-
-        const buttons = new ActionRowBuilder().addComponents(
-            ...["A", "B", "C", "D"].map((optionChoice) => {
-                return new ButtonBuilder()
-                .setCustomId(`option-choice-${optionChoice}`)
-                .setLabel(optionChoice)
-                .setStyle(ButtonStyle.Primary)
-            })
-        )
-        
-        await interaction.reply({embeds: [embed], components: [buttons]})
+        try {
+            const {data} = await axios.get("https://opentdb.com/api.php?amount=1")
+            const quizQuestion = data.results[0]
+            const allAnswers = this.setupAnswers(quizQuestion.incorrect_answers, quizQuestion.correct_answer)
+            console.log(quizQuestion.correct_answer)
+    
+            const embed = new EmbedBuilder()
+            .setTitle(he.decode(quizQuestion.question))
+            .setAuthor({name: interaction.user.globalName})
+            .setFooter({text: `Difficulty: ${quizQuestion.difficulty}`})
+            .addFields(
+                ...["A", "B", "C", "D"].map((optionChoice, index) => {
+                    return {name: optionChoice, value: he.decode(allAnswers[index])}
+                })
+            )
+            .setColor("Orange")
+    
+            const buttons = new ActionRowBuilder().addComponents(
+                ...["A", "B", "C", "D"].map((optionChoice, index) => {
+                    return new ButtonBuilder()
+                    .setCustomId(`quiz-option-${optionChoice + (allAnswers[index] === quizQuestion.correct_answer ? "-correct" : "")}`)
+                    .setLabel(optionChoice)
+                    .setStyle(ButtonStyle.Primary)
+                })
+            )
+            
+            await interaction.reply({embeds: [embed], components: [buttons]})
+        } catch(err) {
+            await interaction.reply({content: "Error getting quiz question. Please try again later.", ephemeral: true})
+            await logError(interaction, err)
+        }
     }
 
     setupAnswers(incorrectAnswers, correctAnswer){

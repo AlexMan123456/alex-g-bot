@@ -9,7 +9,6 @@ class SuggestionsReopenButtonHandler extends InteractionHandler {
     constructor(context, options){
         super(context, {
             ...options,
-            preconditions: ["OwnerOnly"],
             interactionHandlerType: InteractionHandlerTypes.Button
         })
     }
@@ -57,4 +56,4 @@ class SuggestionsReopenButtonHandler extends InteractionHandler {
     }
 }
 
-module.exports = {SuggestionsPendingButtonHandler: SuggestionsReopenButtonHandler}
+module.exports = {SuggestionsReopenButtonHandler}
