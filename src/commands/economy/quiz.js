@@ -1,7 +1,7 @@
 const { Command } = require("@sapphire/framework")
 const axios = require("axios")
 const randomiseArray = require("../../utils/randomise-array")
-const { EmbedBuilder } = require("discord.js")
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js")
 const he = require("he")
 
 class QuizCommand extends Command {
@@ -34,8 +34,17 @@ class QuizCommand extends Command {
                 return {name: optionChoice, value: he.decode(allAnswers[index])}
             })
         )
+
+        const buttons = new ActionRowBuilder().addComponents(
+            ...["A", "B", "C", "D"].map((optionChoice) => {
+                return new ButtonBuilder()
+                .setCustomId(`option-choice-${optionChoice}`)
+                .setLabel(optionChoice)
+                .setStyle(ButtonStyle.Primary)
+            })
+        )
         
-        await interaction.reply({embeds: [embed]})
+        await interaction.reply({embeds: [embed], components: [buttons]})
     }
 
     setupAnswers(incorrectAnswers, correctAnswer){
