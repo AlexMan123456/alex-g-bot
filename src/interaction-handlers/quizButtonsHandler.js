@@ -31,7 +31,7 @@ class QuizButtonsHandler extends InteractionHandler {
             if(!isChoiceCorrect){
                 embedFields.push({name: "You chose", value: `**${chosenOption.name}**. ${chosenOption.value}`})
             } else {
-                const amountEarned = this.getAmountEarned()
+                const amountEarned = this.getAmountEarned(interaction.message.embeds[0].footer.text.split(" ")[1])
                 const {money_current: previousAmount} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
                 const newAmount = previousAmount + amountEarned
                 await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newAmount})
@@ -67,8 +67,15 @@ class QuizButtonsHandler extends InteractionHandler {
         })
     }
 
-    getAmountEarned(){
-        return getRandomNumber(1,100)
+    getAmountEarned(difficulty){
+        if(difficulty === "easy"){
+            return getRandomNumber(1, 200)
+        } 
+        if(difficulty === "medium"){
+            return getRandomNumber(201, 400)
+        } 
+        return getRandomNumber(401, 600)
+    
     }
 }
 
