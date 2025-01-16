@@ -75,7 +75,7 @@ class EconCommand extends Subcommand {
                 .addUserOption((option) => {
                     return option
                     .setName("user")
-                    .setDescription("The user to get the balance of")
+                    .setDescription("The user to get the balance of (leave blank to see your own)")
                 })
             })
             .addSubcommand((command) => {
