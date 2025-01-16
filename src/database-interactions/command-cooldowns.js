@@ -1,10 +1,10 @@
 const { container } = require("@sapphire/framework")
 const { database } = container
 
-function getCommandCooldown(user_id, guild_id){
+function getCommandCooldown(user_id, guild_id, name){
     return database.commandCooldowns.findFirst({
         where: {
-            user_id, guild_id
+            user_id, guild_id, name
         }
     }).then((cooldown) => {
         return cooldown
