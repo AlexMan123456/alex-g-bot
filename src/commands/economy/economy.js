@@ -241,7 +241,7 @@ class EconCommand extends Subcommand {
                 const embedCaught = new EmbedBuilder()
                 .setTitle("You've been caught, thief!")
                 .setAuthor({name: interaction.user.globalName})
-                .setDescription(`You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
+                .setDescription(`You've been caught trying to steal from ${userToStealFrom.globalName}. You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
                 .setColor("Red")
 
                 return await interaction.reply({embeds: [embedCaught]})
