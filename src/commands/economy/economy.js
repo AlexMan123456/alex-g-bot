@@ -237,7 +237,14 @@ class EconCommand extends Subcommand {
             if(chance > 50){
                 const {cooldown_expiry} = await postCommandCooldown("economy steal", interaction.user.id, interaction.guild.id, new Date(new Date().getTime() + 3600000))
                 const {date: expiryDate, time: expiryTime} = formatDateAndTime(cooldown_expiry.toISOString())
-                return await interaction.reply(`You've been caught, thief! You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
+
+                const embedCaught = new EmbedBuilder()
+                .setTitle("You've been caught, thief!")
+                .setAuthor({name: interaction.user.globalName})
+                .setDescription(`You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
+                .setColor("Red")
+
+                return await interaction.reply({embeds: [embedCaught]})
             }
     
             const amountToSteal = getStealAmount(1, 100, oldCurrentOfUserToStealFrom)
@@ -248,15 +255,16 @@ class EconCommand extends Subcommand {
             await patchUserAndGuildRelation(userToStealFrom.id, interaction.guild.id, {money_current: newCurrentOfUserToStealFrom})
     
             const {currency_symbol} = await getGuildById(interaction.guild.id)
-            const embed = new EmbedBuilder()
+            const embedSuccess = new EmbedBuilder()
             .setTitle(`${interaction.user.globalName} stole ${currency_symbol}${amountToSteal} from ${userToStealFrom.globalName}`)
             .setAuthor({name: interaction.user.globalName})
             .addFields(
                 {name: `${interaction.user.globalName}: Current`, value: `${currency_symbol}${oldCurrentOfUserStealing} → ${currency_symbol}${newCurrentOfUserStealing}`},
                 {name: `${userToStealFrom.globalName}: Current`, value: `${currency_symbol}${oldCurrentOfUserToStealFrom} → ${currency_symbol}${newCurrentOfUserToStealFrom}`},
             )
+            .setColor("Green")
     
-            await interaction.reply({embeds: [embed]})
+            await interaction.reply({embeds: [embedSuccess]})
         } catch(err) {
             await interaction.reply({content: "Error stealing money.", ephemeral: true})
             await logError(interaction, err)
