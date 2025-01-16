@@ -11,26 +11,27 @@ class UserPrecondition extends Precondition {
 	 */
     async chatInputRun(interaction){
         try {
+            const commandName = getFullCommandName(interaction.command.name, interaction.options._subcommand)
             //check cooldown exists
-            const cooldown = await getCommandCooldown(interaction.user.id, interaction.guild.id)
+            const cooldown = await getCommandCooldown(interaction.user.id, interaction.guild.id, commandName)
             if(!cooldown){
-                await this.setCommandCooldown(interaction)
+                if(interaction.command.name !== "steal-money"){
+                    await this.setCommandCooldown(interaction)
+                }
+                return this.ok()
             }
-
-            return !cooldown ? this.ok() : await this.checkCooldownExpired(interaction, cooldown.cooldown_expiry)
+            return await this.checkCooldownExpired(interaction, cooldown.cooldown_expiry, commandName)
         } catch(err) {
             await logError(interaction, err)
             return this.error({message: "Could not get cooldown for this command.", context: {ephemeral: true}})
         }
     }
 
-    async setCommandCooldown(interaction){
-        const commandName = getFullCommandName(interaction.command.name, interaction.options._subcommand)
+    async setCommandCooldown(interaction, commandName){
         return await postCommandCooldown(commandName, interaction.user.id, interaction.guild.id, getCooldownExpiry(commandName))
     }
 
-    async checkCooldownExpired(interaction, cooldownExpiry){
-        const commandName = getFullCommandName(interaction.command.name, interaction.options._subcommand)
+    async checkCooldownExpired(interaction, cooldownExpiry, commandName){
         const {date: expiryDate, time: expiryTime} = formatDateAndTime(cooldownExpiry.toISOString())
         try {
             if(Date.now() >= cooldownExpiry){

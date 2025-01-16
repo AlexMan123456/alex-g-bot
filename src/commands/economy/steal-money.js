@@ -4,10 +4,15 @@ const getRandomNumber = require("../../utils/get-random-number")
 const { EmbedBuilder } = require("discord.js")
 const { getGuildById } = require("../../database-interactions/guilds")
 const logError = require("../../utils/log-error")
+const { postCommandCooldown } = require("../../database-interactions/command-cooldowns")
+const formatDateAndTime = require("../../utils/format-date-and-time")
 
 class StealMoneyCommand extends Command {
     constructor(context, options){
-        super(context, {...options})
+        super(context, {
+            ...options,
+            preconditions: ["CommandCooldown"]
+        })
     }
 
     registerApplicationCommands(registry){
@@ -34,7 +39,13 @@ class StealMoneyCommand extends Command {
                 return await interaction.reply(`${userToStealFrom.globalName} has no money in current to steal!`)
             }
 
-            
+            const chance = getRandomNumber(1,100)
+
+            if(chance > 50){
+                const {cooldown_expiry} = await postCommandCooldown("steal-money", interaction.user.id, interaction.guild.id, new Date(new Date().getTime() + 3600000))
+                const {date: expiryDate, time: expiryTime} = formatDateAndTime(cooldown_expiry.toISOString())
+                return await interaction.reply(`You've been caught, thief! You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
+            }
     
             const amountToSteal = getRandomNumber(1,100)
             const newCurrentOfUserStealing = oldCurrentOfUserStealing + amountToSteal
