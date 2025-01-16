@@ -15,7 +15,7 @@ class UserPrecondition extends Precondition {
             //check cooldown exists
             const cooldown = await getCommandCooldown(interaction.user.id, interaction.guild.id, commandName)
             if(!cooldown){
-                if(interaction.command.name !== "steal-money"){
+                if(commandName !== "economy steal"){
                     await this.setCommandCooldown(interaction)
                 }
                 return this.ok()
