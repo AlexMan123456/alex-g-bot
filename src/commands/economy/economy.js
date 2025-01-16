@@ -240,7 +240,7 @@ class EconCommand extends Subcommand {
                 return await interaction.reply(`You've been caught, thief! You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
             }
     
-            const amountToSteal = getRandomNumber(1,100)
+            const amountToSteal = getStealAmount(1, 100, oldCurrentOfUserToStealFrom)
             const newCurrentOfUserStealing = oldCurrentOfUserStealing + amountToSteal
             const newCurrentOfUserToStealFrom = oldCurrentOfUserToStealFrom - amountToSteal
     
@@ -260,6 +260,14 @@ class EconCommand extends Subcommand {
         } catch(err) {
             await interaction.reply({content: "Error stealing money.", ephemeral: true})
             await logError(interaction, err)
+        }
+
+        function getStealAmount(lowerBound, upperBound, amountInCurrent){
+            let amountToSteal = getRandomNumber(lowerBound, upperBound)
+            if(amountToSteal > amountInCurrent){
+                return amountInCurrent
+            }
+            return amountToSteal
         }
     }
 }
