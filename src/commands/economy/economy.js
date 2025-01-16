@@ -71,7 +71,12 @@ class EconCommand extends Subcommand {
             .addSubcommand((command) => {
                 return command
                 .setName("balance")
-                .setDescription("See your current balance")
+                .setDescription("See a user's current balance")
+                .addUserOption((option) => {
+                    return option
+                    .setName("user")
+                    .setDescription("The user to get the balance of")
+                })
             })
             .addSubcommand((command) => {
                 return command
@@ -163,12 +168,14 @@ class EconCommand extends Subcommand {
 
     async chatInputBalance(interaction){
         try {
-            const {money_current, money_savings} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
+            const user = interaction.options.getUser("user") ?? interaction.user
+
+            const {money_current, money_savings} = await getUserAndGuildRelation(user.id, interaction.guild.id)
             const {currency_symbol} = await getGuildById(interaction.guild.id)
             
             const embed = new EmbedBuilder()
                 .setTitle("Balance")
-                .setAuthor({name: interaction.user.globalName})
+                .setAuthor({name: user.globalName})
                 .setColor("Green")
                 .addFields(
                     {name: "Current", value: `${currency_symbol}${money_current}`},
@@ -241,7 +248,7 @@ class EconCommand extends Subcommand {
                 const embedCaught = new EmbedBuilder()
                 .setTitle("You've been caught, thief!")
                 .setAuthor({name: interaction.user.globalName})
-                .setDescription(`You've been caught trying to steal from ${userToStealFrom.globalName}. You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`)
+                .addFields({name: `You've been caught trying to steal from ${userToStealFrom.globalName}`, value: `You're under arrest until ${expiryDate}, ${expiryTime}. Your sentence ends <t:${new Date(cooldown_expiry.getTime()/1000).getTime()}:R>.`})
                 .setColor("Red")
 
                 return await interaction.reply({embeds: [embedCaught]})
