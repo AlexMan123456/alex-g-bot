@@ -38,7 +38,6 @@ class QuizCommand extends Command {
             const {data} = await axios.get(apiLink)
             const quizQuestion = data.results[0]
             const allAnswers = this.setupAnswers(quizQuestion.incorrect_answers, quizQuestion.correct_answer)
-            console.log(quizQuestion.correct_answer)
 
             const optionChoices = ["A", "B", "C", "D"]
     
