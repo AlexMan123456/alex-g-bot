@@ -124,7 +124,7 @@ class EconCommand extends Subcommand {
             const {currency_symbol} = await getGuildById(interaction.guild.id)
 
             const embed = new EmbedBuilder()
-                .setTitle(`Deposited ${depositAmount}`)
+                .setTitle(`Deposited ${currency_symbol}${depositAmount}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
@@ -151,7 +151,7 @@ class EconCommand extends Subcommand {
             const {currency_symbol} = await getGuildById(interaction.guild.id)
 
             const embed = new EmbedBuilder()
-                .setTitle(`Withdrawn ${withdrawAmount}`)
+                .setTitle(`Withdrawn ${currency_symbol}${withdrawAmount}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
@@ -200,7 +200,7 @@ class EconCommand extends Subcommand {
             const {currency_symbol} = await getGuildById(interaction.guild.id)
 
             const embed = new EmbedBuilder()
-                .setTitle(`Daily bonus claimed: +${increment}`)
+                .setTitle(`Daily bonus claimed: +${currency_symbol}${increment}`)
                 .setAuthor({name: interaction.user.globalName})
                 .setColor("Green")
                 .addFields(
