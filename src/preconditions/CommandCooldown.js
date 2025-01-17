@@ -16,7 +16,7 @@ class UserPrecondition extends Precondition {
             const cooldown = await getCommandCooldown(interaction.user.id, interaction.guild.id, commandName)
             if(!cooldown){
                 if(commandName !== "economy steal"){
-                    await this.setCommandCooldown(interaction)
+                    await this.setCommandCooldown(interaction, commandName)
                 }
                 return this.ok()
             }
