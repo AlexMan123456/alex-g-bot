@@ -1,7 +1,6 @@
 require('./lib/setup');
 const { PrismaClient } = require('@prisma/client');
 const { LogLevel, SapphireClient, container } = require('@sapphire/framework');
-
 const { GatewayIntentBits, Partials } = require('discord.js');
 
 const client = new SapphireClient({
