@@ -40,21 +40,7 @@ class ApiCommand extends Subcommand {
 
     async chatInputRun(interaction){
         const apiLink = interaction.options.getString("api")
-
         const {data, success} = await this.getFromApi(apiLink)
-
-        /*let outputMessage = stripIndents(
-            `**${error === false ? "API request successful" : "Error making API request"}**
-            __Request__
-            ${"```" + apiLink + "```"}
-            __Response__`
-        )
-
-        outputMessage = outputMessage + "\n```js\n" + JSON.stringify(data, null, 2) + "```"
-
-        if(outputMessage.length > 2000){
-            outputMessage = outputMessage.slice(0,1994) + "...```"
-        }*/
 
         const outputMessage = formatCodeResponse(
             ["API request successful", "Error making API request"],

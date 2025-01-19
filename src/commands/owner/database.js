@@ -72,15 +72,6 @@ class DatabaseCommand extends Subcommand {
         const queryString = interaction.options.getString("query")
         const {queryResult, success} = await runQuery(queryString)
 
-        /*const embed = new EmbedBuilder()
-            .setTitle(colour === "Green" ? "Query executed" : "Error while executing query")
-            .setAuthor({name: interaction.user.username})
-            .addFields(
-                {name: "Input", value: "```" + queryString + "```"},
-                {name: "Output", value: "```js\n" + JSON.stringify(queryResult, undefined, 2) + "```"}
-            )
-            .setColor(colour)*/
-
         const message = formatCodeResponse(
             ["Query executed", "Error while executing query"],
             ["Query", queryString],
