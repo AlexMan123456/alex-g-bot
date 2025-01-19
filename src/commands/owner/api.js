@@ -3,7 +3,6 @@ const axios = require("axios")
 const { EmbedBuilder } = require("discord.js")
 const logError = require("../../utils/log-error")
 const { stripIndents } = require("common-tags")
-const formatCodeResponse = require("../../utils/format-code-response")
 
 class ApiCommand extends Subcommand {
     constructor(context, options){
@@ -41,9 +40,9 @@ class ApiCommand extends Subcommand {
     async chatInputRun(interaction){
         const apiLink = interaction.options.getString("api")
 
-        const {data, success} = await this.getFromApi(apiLink)
+        const {data, error} = await this.getFromApi(apiLink)
 
-        /*let outputMessage = stripIndents(
+        let outputMessage = stripIndents(
             `**${error === false ? "API request successful" : "Error making API request"}**
             __Request__
             ${"```" + apiLink + "```"}
@@ -54,23 +53,16 @@ class ApiCommand extends Subcommand {
 
         if(outputMessage.length > 2000){
             outputMessage = outputMessage.slice(0,1994) + "...```"
-        }*/
-
-        const outputMessage = formatCodeResponse(
-            ["API request successful", "Error making API request"],
-            ["Request", apiLink],
-            ["Response", data],
-            success
-        )
+        }
 
         await interaction.reply(outputMessage)
     }
 
     async getFromApi(apiLink){
         return axios.get(apiLink).then(({data}) => {
-            return {data, success: true}
+            return {data, error: false}
         }).catch((err) => {
-            return {data: err, success: false}
+            return {data: err, error: true}
         })
     }
 }
