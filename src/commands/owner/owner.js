@@ -40,14 +40,6 @@ class OwnerCommand extends Subcommand {
                     chatInputRun: "chatInputAddUserToGuild"
                 },
                 {
-                    name: "set-welcome-message",
-                    chatInputRun: "chatInputSetWelcomeMessage"
-                },
-                {
-                    name: "set-leave-message",
-                    chatInputRun: "chatInputSetLeaveMessage"
-                },
-                {
                     name: "set-mod-role",
                     chatInputRun: "chatInputSetModRole"
                 }
