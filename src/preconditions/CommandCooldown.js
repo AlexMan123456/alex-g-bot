@@ -10,7 +10,7 @@ class UserPrecondition extends Precondition {
 	 */
     async chatInputRun(interaction){
         try {
-            const commandName = getFullCommandName(interaction.command.name, interaction.options._subcommand)
+            const commandName = getFullCommandName(interaction)
             //check cooldown exists
             const cooldown = await getCommandCooldownByUserGuildAndName(interaction.user.id, interaction.guild.id, commandName)
             if(!cooldown){
