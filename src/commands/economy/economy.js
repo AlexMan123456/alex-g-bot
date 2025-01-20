@@ -38,6 +38,10 @@ class EconCommand extends Subcommand {
                     name: "steal",
                     chatInputRun: "chatInputSteal",
                     preconditions: ["CommandCooldown"]
+                },
+                {
+                    name: "pay-user",
+                    chatInputRun: "chatInputPay"
                 }
             ]
         })
@@ -102,6 +106,23 @@ class EconCommand extends Subcommand {
                     return option
                     .setName("user")
                     .setDescription("The user to steal money from")
+                    .setRequired(true)
+                })
+            })
+            .addSubcommand((command) => {
+                return command
+                .setName("pay-user")
+                .setDescription("Pay another user")
+                .addUserOption((option) => {
+                    return option
+                    .setName("user")
+                    .setDescription("The user to pay")
+                    .setRequired(true)
+                })
+                .addNumberOption((option) => {
+                    return option
+                    .setName("amount")
+                    .setDescription("The amount to pay the given user")
                     .setRequired(true)
                 })
             })
@@ -284,6 +305,43 @@ class EconCommand extends Subcommand {
                 return amountInCurrent
             }
             return amountToSteal
+        }
+    }
+
+    async chatInputPay(interaction){
+        try {
+            const userToPay = interaction.options.getUser("user")
+            const amountToPay = interaction.options.getNumber("amount")
+    
+            const {money_current: oldUserPayingCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
+            const {money_current: oldUserToPayCurrent} = await getUserAndGuildRelation(userToPay.id, interaction.guild.id)
+    
+            if(oldUserPayingCurrent === 0){
+                return await interaction.reply({content: "You do not have any money to pay.", ephemeral: true})
+            }
+    
+            const newUserPayingCurrent = oldUserPayingCurrent - amountToPay
+            if(newUserPayingCurrent < 0){
+                return await interaction.reply({content: "You do not have enough money to make this payment", ephemeral: true})
+            }
+            const newUserToPayCurrent = oldUserToPayCurrent + amountToPay
+    
+            await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newUserPayingCurrent})
+            await patchUserAndGuildRelation(userToPay.id, interaction.guild.id, {money_current: newUserToPayCurrent})
+    
+            const {currency_symbol} = await getGuildById(interaction.guild.id)
+            const embed = new EmbedBuilder()
+            .setTitle(`${interaction.user.globalName} has paid ${userToPay.globalName} ${currency_symbol}${amountToPay}`)
+            .addFields(
+                {name: `${interaction.user.globalName}: Current`, value: `${currency_symbol}${oldUserPayingCurrent} → ${currency_symbol}${newUserPayingCurrent}`},
+                {name: `${userToPay.globalName}: Current`, value: `${currency_symbol}${oldUserToPayCurrent} → ${currency_symbol}${newUserToPayCurrent}`}
+            )
+            .setColor("Green")
+    
+            await interaction.reply({embeds: [embed]})
+        } catch(err) {
+            await interaction.reply("Error making payment. Please try again later.")
+            await logError(interaction, err)
         }
     }
 }
