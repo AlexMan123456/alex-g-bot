@@ -65,6 +65,16 @@ class DatabaseCommand extends Subcommand {
                 .setName("add-guild")
                 .setDescription("Add the current guild to the bot's database")
             })
+            .addSubcommand((command) => {
+                return command
+                .setName("add-user-to-guild")
+                .setDescription("Add the user to the guild the command is run in")
+                .addUserOption((option) => {
+                    return option
+                    .setName("user")
+                    .setDescription("The user to add to the guild")
+                })
+            })
         })
     }
 
