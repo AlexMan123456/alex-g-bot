@@ -4,6 +4,7 @@ const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonIntera
 const { patchSuggestion } = require("../database-interactions/suggestions");
 const logError = require("../utils/log-error");
 const makeFirstLetterUppercase = require("../utils/make-first-letter-uppercase");
+const DMUser = require("../utils/dm-user");
 
 class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
     constructor(context, options){
@@ -46,8 +47,11 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
                 .setColor(suggestion.status === "resolved" ? "Green" : "Red")
 
             const user = await interaction.client.users.fetch(suggestion.author.user_id)
-            await user.send({embeds: [embed]})
+            const {DMSent} = await DMUser(user, {embeds: [embed]})
             await interaction.update({embeds: [embed], components: [buttons]})
+            if(DMSent === false){
+                await interaction.user.send({content: "Could not DM user", embeds: [embed]})
+            }
         } catch(err) {
             await interaction.reply({content: `Could not ${resolveOrReject === "resolved" ? "resolve" : "reject"} suggestion.`, ephemeral: true})
             await logError(interaction, err)

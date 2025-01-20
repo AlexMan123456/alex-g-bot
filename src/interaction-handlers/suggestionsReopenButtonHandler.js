@@ -4,6 +4,7 @@ const { patchSuggestion } = require("../database-interactions/suggestions");
 const { ButtonBuilder, EmbedBuilder, ActionRowBuilder } = require("@discordjs/builders");
 const { ButtonStyle, ButtonInteraction } = require("discord.js");
 const logError = require("../utils/log-error");
+const DMUser = require("../utils/dm-user");
 
 class SuggestionsReopenButtonHandler extends InteractionHandler {
     constructor(context, options){
@@ -47,14 +48,17 @@ class SuggestionsReopenButtonHandler extends InteractionHandler {
             .addFields({name: "Details", value: suggestion.description})
             .setFooter({text: `Re-opened on ${date}, ${time}`})
             
-            const DMembed = new EmbedBuilder()
+            const DMEmbed = new EmbedBuilder()
             .setTitle("Suggestion re-opened")
             .setAuthor({name: suggestion.author.global_name})
             .addFields({name: suggestion.title, value: suggestion.description})
             .setFooter({text: `Re-opened on ${date}, ${time}`})
     
             const user = await interaction.client.users.fetch(suggestion.author.user_id)
-            await user.send({embeds: [DMembed]})
+            const {DMSent} = await DMUser(user, {embeds: [DMEmbed]})
+            if(DMSent === false){
+                await interaction.user.send({content: "Could not DM user", embeds: [DMEmbed]})
+            }
             await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
             await interaction.reply({content: "Could not re-open suggestion.", ephemeral: true})
