@@ -25,8 +25,6 @@ class RoleCommand extends Command {
         const role = interaction.options.getRole("role")
         const {date, time} = formatDateAndTime(new Date(role.createdTimestamp).toISOString())
 
-        console.log(role)
-
         const embed = new EmbedBuilder()
             .setTitle(role.name)
             .setColor(role.color)

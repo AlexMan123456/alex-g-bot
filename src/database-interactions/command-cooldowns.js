@@ -1,13 +1,23 @@
 const { container } = require("@sapphire/framework")
 const { database } = container
 
-function getCommandCooldown(user_id, guild_id, name){
+function getCommandCooldownByUserGuildAndName(user_id, guild_id, name){
     return database.commandCooldowns.findFirst({
         where: {
             user_id, guild_id, name
         }
     }).then((cooldown) => {
         return cooldown
+    })
+}
+
+function getAllCommandCooldownsOfUserFromGuild(user_id, guild_id){
+    return database.commandCooldowns.findMany({
+        where: {
+            user_id, guild_id
+        }
+    }).then((cooldowns) => {
+        return cooldowns
     })
 }
 
@@ -39,4 +49,4 @@ function deleteCommandCooldown(user_id, guild_id, name){
     })
 }
 
-module.exports = { postCommandCooldown, deleteCommandCooldown, getCommandCooldown }
+module.exports = { postCommandCooldown, deleteCommandCooldown, getCommandCooldownByUserGuildAndName, getAllCommandCooldownsOfUserFromGuild }

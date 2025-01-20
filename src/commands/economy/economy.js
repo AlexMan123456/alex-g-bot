@@ -206,7 +206,8 @@ class EconCommand extends Subcommand {
                 .addFields(
                     {name: "Current", value: `${currency_symbol}${previousCurrent} → ${currency_symbol}${newCurrent}`}
                 )
-            
+
+                await postCommandCooldown("economy daily-bonus", interaction.user.id, interaction.guild.id, new Date(new Date().getTime() + 86400000))
                 await interaction.reply({embeds: [embed]})
         } catch(err) {
             await interaction.reply({content: "Could not claim daily bonus.", ephemeral: true})
