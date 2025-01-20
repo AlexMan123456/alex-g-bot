@@ -42,11 +42,19 @@ class SuggestionsReopenButtonHandler extends InteractionHandler {
             const buttons = new ActionRowBuilder().addComponents(resolveButton, rejectButton)
     
             const embed = new EmbedBuilder()
-                .setTitle(suggestion.title)
-                .setAuthor({name: suggestion.author.global_name})
-                .addFields({name: "Details", value: suggestion.description})
-                .setFooter({text: `Re-opened on ${date}, ${time}`})
+            .setTitle(suggestion.title)
+            .setAuthor({name: suggestion.author.global_name})
+            .addFields({name: "Details", value: suggestion.description})
+            .setFooter({text: `Re-opened on ${date}, ${time}`})
+            
+            const DMembed = new EmbedBuilder()
+            .setTitle("Suggestion re-opened")
+            .setAuthor({name: suggestion.author.global_name})
+            .addFields({name: suggestion.title, value: suggestion.description})
+            .setFooter({text: `Re-opened on ${date}, ${time}`})
     
+            const user = await interaction.client.users.fetch(suggestion.author.user_id)
+            await user.send({embeds: [DMembed]})
             await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
             await interaction.reply({content: "Could not re-open suggestion.", ephemeral: true})
