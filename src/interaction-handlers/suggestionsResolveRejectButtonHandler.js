@@ -39,12 +39,14 @@ class SuggestionsResolveRejectButtonHandler extends InteractionHandler {
             const buttons = new ActionRowBuilder().addComponents(pendingButton)
     
             const embed = new EmbedBuilder()
-                .setTitle(suggestion.title)
+                .setTitle(`Suggestion ${suggestion.status}`)
                 .setAuthor({name: suggestion.author.global_name})
-                .addFields({name: "Details", value: suggestion.description})
+                .addFields({name: suggestion.title, value: suggestion.description})
                 .setFooter({text: `${makeFirstLetterUppercase(suggestion.status)} on ${date}, ${time}`})
                 .setColor(suggestion.status === "resolved" ? "Green" : "Red")
-    
+
+            const user = await interaction.client.users.fetch(suggestion.author.user_id)
+            await user.send({embeds: [embed]})
             await interaction.update({embeds: [embed], components: [buttons]})
         } catch(err) {
             await interaction.reply({content: `Could not ${resolveOrReject === "resolved" ? "resolve" : "reject"} suggestion.`, ephemeral: true})

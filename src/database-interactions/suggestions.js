@@ -8,6 +8,7 @@ const allAttributes = {
     status: true,
     author: {
         select: {
+            user_id: true,
             global_name: true
         }
     }
