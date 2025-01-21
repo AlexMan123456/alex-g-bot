@@ -44,7 +44,7 @@ function postCommandCooldown(name, user_id, guild_id, cooldown_expiry){
 function deleteCommandCooldown(user_id, guild_id, name){
     return database.commandCooldowns.deleteMany({
         where: {
-            user_id, guild_id
+            user_id, guild_id, name
         }
     })
 }
