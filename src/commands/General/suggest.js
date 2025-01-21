@@ -1,4 +1,4 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js")
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
 const { getUserById, postUser } = require("../../database-interactions/users")
 const { postSuggestion } = require("../../database-interactions/suggestions")
 const logError = require("../../utils/log-error")
@@ -38,7 +38,7 @@ class SuggestCommand extends Subcommand {
                     return command
                         .setName("create")
                         .setDescription("Suggest a feature to be added to the bot")
-                        .addStringOption((option) => {
+                        /*.addStringOption((option) => {
                             return option
                                 .setName("title")
                                 .setDescription("The title of your suggestion")
@@ -49,7 +49,7 @@ class SuggestCommand extends Subcommand {
                                 .setName("description")
                                 .setDescription("Describe the main features of your suggestion")
                                 .setRequired(true)
-                        })
+                        })*/
                 })
                 .addSubcommand((command) => {
                     return command
@@ -71,40 +71,26 @@ class SuggestCommand extends Subcommand {
     }
 
     async chatInputCreate(interaction){
-        const suggestionTitle = interaction.options.getString("title")
-        const suggestionDescription = interaction.options.getString("description")
-        
-        try {
-            const suggestionsChannel = await getGuildById(interaction.guild.id).then((guild) => {
-                return interaction.guild.channels.cache.get(guild.suggestions_channel_id)
-            })
-            const message = await suggestionsChannel.send({content: "Logging suggestion..."})
-            const suggestion = await addSuggestionToDatabase({suggestion_id: message.id, title: suggestionTitle, description: suggestionDescription}, interaction)
+        const modal = new ModalBuilder()
+        .setCustomId("createSuggestion")
+        .setTitle("Create a suggestion")
 
-            const resolveButton = new ButtonBuilder()
-                .setCustomId("suggestion-resolve")
-                .setLabel("Resolve")
-                .setStyle(ButtonStyle.Success)
+        const title = new TextInputBuilder()
+        .setCustomId("suggestionTitle")
+        .setLabel("Suggestion Title")
+        .setStyle(TextInputStyle.Short)
 
-            const rejectButton = new ButtonBuilder()
-                .setCustomId("suggestion-reject")
-                .setLabel("Reject")
-                .setStyle(ButtonStyle.Danger)
+        const description = new TextInputBuilder()
+        .setCustomId("suggestionDescription")
+        .setLabel("Suggestion Description")
+        .setStyle(TextInputStyle.Paragraph)
 
-            const embed = new EmbedBuilder()
-                .setTitle(suggestion.title)
-                .setAuthor({name: suggestion.author.global_name})
-                .addFields({name: "Details", value: suggestion.description})
-                .setTimestamp()
-            
-            const buttons = new ActionRowBuilder().addComponents(resolveButton, rejectButton)
-      
-            await message.edit({content: "", embeds: [embed], components: [buttons]})
-            await interaction.reply({embeds: [embed], ephemeral: true})
-        } catch(err) {
-            await interaction.reply({content: "Could not log suggestion. Please try again later.", ephemeral: true})
-            await logError(interaction, err)
-        }
+        modal.addComponents(
+            new ActionRowBuilder().addComponents(title),
+            new ActionRowBuilder().addComponents(description)
+        )
+
+        await interaction.showModal(modal)
     }
 
     async chatInputView(interaction){
