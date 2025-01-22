@@ -65,21 +65,12 @@ class GitHubCommand extends Subcommand {
 
         await interaction.reply({embeds: [embed]})*/
 
-        const commits = turnNestedArrayIntoObject(execSync(`git log --pretty=format:"%h - %s" -10`).toString().split("\n").map((commit) => {
-                return commit.split(" - ")
-            })
-        )
-        
-        const fields = []
-
-        for(const commitID in commits){
-            fields.push({name: commitID, value: commits[commitID]}) 
-        }
+        const commits = execSync(`git log --pretty=format:"**%h**: %s" -10`).toString()
 
         const embed = new EmbedBuilder()
         .setTitle("Commit history")
         .setAuthor({name: interaction.user.globalName})
-        .addFields(...fields)
+        .setDescription(commits)
 
         await interaction.reply({embeds: [embed]})
     }
