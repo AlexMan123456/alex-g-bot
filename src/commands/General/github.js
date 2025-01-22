@@ -1,8 +1,10 @@
-const axios = require("axios");
-const logError = require("../../utils/log-error");
-const { Subcommand } = require("@sapphire/plugin-subcommands");
-const { EmbedBuilder } = require("discord.js");
-const formatDateAndTime = require("../../utils/format-date-and-time");
+const axios = require("axios")
+const {execSync} = require("node:child_process")
+const logError = require("../../utils/log-error")
+const { Subcommand } = require("@sapphire/plugin-subcommands")
+const { EmbedBuilder } = require("discord.js")
+const formatDateAndTime = require("../../utils/format-date-and-time")
+const turnNestedArrayIntoObject = require("../../utils/turn-nested-array-into-object")
 
 class GitHubCommand extends Subcommand {
     constructor(context, options){
@@ -49,7 +51,7 @@ class GitHubCommand extends Subcommand {
     }
 
     async chatInputCommits(interaction){
-        const {data: commits} = await axios.get("https://api.github.com/repos/AlexMan123456/alex-g-bot/commits")
+        /*const {data: commits} = await axios.get("https://api.github.com/repos/AlexMan123456/alex-g-bot/commits")
 
         const embed = new EmbedBuilder()
         .setTitle("Commit history")
@@ -60,6 +62,24 @@ class GitHubCommand extends Subcommand {
                 return {name: `Created by ${commit.author.name} at ${date}, ${time}`, value: commit.message}
             })
         )
+
+        await interaction.reply({embeds: [embed]})*/
+
+        const commits = turnNestedArrayIntoObject(execSync(`git log --pretty=format:"%h - %s" -10`).toString().split("\n").map((commit) => {
+                return commit.split(" - ")
+            })
+        )
+        
+        const fields = []
+
+        for(const commitID in commits){
+            fields.push({name: commitID, value: commits[commitID]}) 
+        }
+
+        const embed = new EmbedBuilder()
+        .setTitle("Commit history")
+        .setAuthor({name: interaction.user.globalName})
+        .addFields(...fields)
 
         await interaction.reply({embeds: [embed]})
     }
