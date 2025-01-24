@@ -80,7 +80,7 @@ class SuggestCommand extends Subcommand {
 
         await interaction.showModal(modal)
     }
-
+//
     async chatInputView(interaction){
         const {suggestions} = await getUserById(interaction.user.id)
 
