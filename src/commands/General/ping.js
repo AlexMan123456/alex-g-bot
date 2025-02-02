@@ -1,4 +1,4 @@
-const { Command } = require('@sapphire/framework')
+const { Command, container } = require('@sapphire/framework')
 const logError = require('../../utils/log-error')
 const { EmbedBuilder } = require('discord.js')
 
@@ -14,18 +14,26 @@ class PingCommand extends Command {
 	}
 
 	async chatInputRun(interaction){
+		let replied = false;
 		try {
-			const message = await interaction.reply("Pong")
+			const message = await interaction.reply("Pong");
+			replied = true;
+			
+			const uptime = new Date(Date.now() - container.startTime.getTime()).getMinutes()
 
 			const embed = new EmbedBuilder()
 			.setTitle("Ping pong!")
 			.setColor("Green")
-			.addFields({name: "Bot latency", value: `${Date.now() - message.createdTimestamp}ms`})
+			.addFields(
+				{name: "Bot latency", value: `${Date.now() - message.createdTimestamp}ms`},
+				{name: "Uptime", value: `${uptime} ${uptime === 1 ? "minute" : "minutes"}`}
+			);
 
-			await message.edit({embeds: [embed]})
+			await message.edit({embeds: [embed]});
 		} catch(err) {
-			await interaction.reply({content: "My code is so bad, it fails at even just a simple ping command!", ephemeral: true})
-			await logError(interaction, err)
+			const errorMessage = {content: "My code is so bad, it fails at even just a simple ping command!", ephemeral: true};
+			!replied ? await interaction.reply(errorMessage) : null;
+			await logError(interaction, err);
 		}
 	}
 }
