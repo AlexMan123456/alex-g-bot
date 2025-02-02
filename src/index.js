@@ -30,12 +30,14 @@ const client = new SapphireClient({
 const main = async () => {
 	try {
 		client.logger.info('Logging in');
-		container.database = new PrismaClient()
+		container.database = new PrismaClient();
+		container.startTime = new Date();
 		await client.login(process.env.DISCORD_TOKEN);
 		client.logger.info('logged in');
 	} catch (error) {
 		client.logger.fatal(error);
-		container.database.destroy()
+		container.database.destroy();
+		container.startTime.destroy();
 		client.destroy();
 		process.exit(1);
 	}
