@@ -49,4 +49,12 @@ function deleteCommandCooldown(user_id, guild_id, name){
     })
 }
 
-module.exports = { postCommandCooldown, deleteCommandCooldown, getCommandCooldownByUserGuildAndName, getAllCommandCooldownsOfUserFromGuild }
+function deleteAllCommandCooldownsOfUser(user_id, guild_id){
+    return database.commandCooldowns.deleteMany({
+        where: {
+            user_id, guild_id
+        }
+    })
+}
+
+module.exports = { postCommandCooldown, deleteCommandCooldown, getCommandCooldownByUserGuildAndName, getAllCommandCooldownsOfUserFromGuild, deleteAllCommandCooldownsOfUser }

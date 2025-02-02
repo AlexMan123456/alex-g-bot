@@ -1,13 +1,16 @@
 const { container } = require("@sapphire/framework")
+const { deleteAllCommandCooldownsOfUser } = require("./command-cooldowns")
 const { database } = container
 
 function removeUserFromGuild(user_id, guild_id){
-    return database.usersAndGuilds.delete({
-        where: {
-            user_id_guild_id: {
-                user_id, guild_id
+    return deleteAllCommandCooldownsOfUser(user_id, guild_id).then(() => {
+        return database.usersAndGuilds.delete({
+            where: {
+                user_id_guild_id: {
+                    user_id, guild_id
+                }
             }
-        }
+        })
     })
 }
 
