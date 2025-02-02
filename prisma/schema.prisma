@@ -65,7 +65,7 @@ model CommandCooldowns {
   name            String
   cooldown_expiry DateTime
   command_id      Int            @id @default(autoincrement())
-  user_in_guild   UsersAndGuilds @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: Cascade)
+  user_in_guild   UsersAndGuilds @relation(fields: [user_id, guild_id], references: [user_id, guild_id])
 
   @@map("command_cooldowns")
 }
