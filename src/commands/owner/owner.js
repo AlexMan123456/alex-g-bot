@@ -1,11 +1,7 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
-const queryDatabase = require("../../miscellaneous/owner-subcommands/query-database");
-const evalCommand = require("../../miscellaneous/owner-subcommands/eval");
-const addUserToDatabase = require("../../miscellaneous/owner-subcommands/add-user-to-db");
-const addGuildToDatabase = require("../../miscellaneous/owner-subcommands/add-guild-to-db");
-const addUserToGuild = require("../../miscellaneous/owner-subcommands/add-user-to-guild");
 const { patchGuild } = require("../../database-interactions/guilds");
 const logError = require("../../utils/log-error");
+const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } = require("discord.js");
 
 class OwnerCommand extends Subcommand {
     constructor(context, options){
@@ -68,24 +64,27 @@ class OwnerCommand extends Subcommand {
         }
     }
 
-    async chatInputQueryDatabase(interaction){
-        await queryDatabase(interaction)
-    }
-
     async chatInputEval(interaction){
-        await evalCommand(interaction)
-    }
+        const modal = new ModalBuilder()
+        .setCustomId("Eval")
+        .setTitle("Eval")
 
-    async chatInputAddUserToDatabase(interaction){
-        await addUserToDatabase(interaction)
-    }
+        const codeInput = new TextInputBuilder()
+        .setCustomId("code")
+        .setLabel("Enter your code here")
+        .setStyle(TextInputStyle.Paragraph)
+        
+        const stringifyOutput = new TextInputBuilder()
+        .setCustomId("lineSpacing")
+        .setLabel("Set line spacing of output")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false)
 
-    async chatInputAddGuildToDatabase(interaction){
-        await addGuildToDatabase(interaction)
-    }
+        const codeRow = new ActionRowBuilder().addComponents(codeInput)
+        const stringifyRow = new ActionRowBuilder().addComponents(stringifyOutput)
+        modal.addComponents(codeRow, stringifyRow)
 
-    async chatInputAddUserToGuild(interaction){
-        await addUserToGuild(interaction)
+        await interaction.showModal(modal)
     }
 
     async chatInputSetModRole(interaction){

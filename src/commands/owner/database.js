@@ -4,7 +4,6 @@ const { addUserAndGuildRelation } = require("../../database-interactions/users-a
 const { postGuild, getGuildById } = require("../../database-interactions/guilds");
 const { postUser } = require("../../database-interactions/users");
 const { container } = require("@sapphire/framework");
-const { stripIndents } = require("common-tags");
 const formatCodeResponse = require("../../utils/format-code-response");
 
 class DatabaseCommand extends Subcommand {
