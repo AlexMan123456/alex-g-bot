@@ -12,6 +12,7 @@ model User {
   username    String           @db.VarChar(100)
   global_name String           @db.VarChar(100)
   bot_user    Boolean
+  items       UsersAndItems[]
   suggestions Suggestion[]
   guilds      UsersAndGuilds[]
 
@@ -40,6 +41,7 @@ model Guild {
   welcome_channel_id     String?
   error_log_id           String?
   currency_symbol        String           @default("£")
+  items                  Items[]
   users                  UsersAndGuilds[]
 
   @@map("guilds")
@@ -68,6 +70,29 @@ model CommandCooldowns {
   user_in_guild   UsersAndGuilds @relation(fields: [user_id, guild_id], references: [user_id, guild_id])
 
   @@map("command_cooldowns")
+}
+
+model Items {
+  item_id     Int             @id @default(autoincrement())
+  user_id     String?
+  guild_id    String
+  name        String
+  description String?
+  stock       Int?
+  price       Int
+  users       UsersAndItems[]
+  guild       Guild           @relation(fields: [guild_id], references: [guild_id])
+
+  @@map("items")
+}
+
+model UsersAndItems {
+  user_id String
+  item_id Int
+  item    Items  @relation(fields: [item_id], references: [item_id])
+  user    User   @relation(fields: [user_id], references: [user_id])
+
+  @@id([user_id, item_id])
 }
 
 enum SuggestionStatus {
