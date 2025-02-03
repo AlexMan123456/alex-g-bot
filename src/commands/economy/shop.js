@@ -1,6 +1,8 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const logError = require("../../utils/log-error");
 const { getItemsFromGuild, postItemToGuild } = require("../../database-interactions/items");
+const { EmbedBuilder } = require("discord.js");
+const { getGuildById } = require("../../database-interactions/guilds");
 
 class ShopCommand extends Subcommand {
     constructor(context, options){
@@ -63,10 +65,21 @@ class ShopCommand extends Subcommand {
     async chatInputItems(interaction){
         try {
             const items = await getItemsFromGuild(interaction.guild.id);
-            await interaction.reply(JSON.stringify(items));
+            const {currency_symbol} = await getGuildById(interaction.guild.id);
+            
+            const embed = new EmbedBuilder()
+            .setTitle("Items")
+            .setColor("Blue")
+            .addFields(
+                ...items.map((item) => {
+                    return {name: `${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock ? `\n**Stock:** ${item.stock}` : "")}
+                })
+            )
+            
+            await interaction.reply({embeds: [embed]})
         } catch(err) {
             await interaction.reply({content: "Could not get items. Please try again later.", ephemeral: true});
-            await logError(err);
+            await logError(interaction, err);
         }
     }
 
@@ -78,8 +91,15 @@ class ShopCommand extends Subcommand {
             const stock = interaction.options.getNumber("stock");
 
             const postedItem = await postItemToGuild(interaction.guild.id, name, description, price, stock);
+            const {currency_symbol} = await getGuildById(interaction.guild.id);
 
-            await interaction.reply(JSON.stringify(postedItem));
+            const embed = new EmbedBuilder()
+            .setTitle("Item posted")
+            .setAuthor({name: interaction.user.globalName})
+            .setColor("Green")
+            .addFields({name: `${postedItem.name}: ${currency_symbol}${postedItem.price}`, value: (postedItem.description ?? " ") + (postedItem.stock ? `\n**Stock:** ${postedItem.stock}` : "")})
+
+            await interaction.reply({embeds: [embed]});
         } catch(err) {
             await interaction.reply({content: "Could not add item to shop. Please try again later.", ephemeral: true});
             await logError(interaction, err);

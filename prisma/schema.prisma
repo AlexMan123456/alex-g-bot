@@ -74,7 +74,6 @@ model CommandCooldowns {
 
 model Items {
   item_id     Int             @id @default(autoincrement())
-  user_id     String?
   guild_id    String
   name        String
   description String?
