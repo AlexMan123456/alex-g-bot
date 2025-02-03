@@ -1,6 +1,6 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const logError = require("../../utils/log-error");
-const { getItemsFromGuild, postItemToGuild, getItemsByName } = require("../../database-interactions/items");
+const { getItemsFromGuild, postItemToGuild, getItemsByName, getItemsPurchasedByUser } = require("../../database-interactions/items");
 const { EmbedBuilder } = require("discord.js");
 const { getGuildById } = require("../../database-interactions/guilds");
 const giveItemToUser = require("../../miscellaneous/give-item-to-user");
@@ -23,6 +23,10 @@ class ShopCommand extends Subcommand {
                 {
                     name: "buy",
                     chatInputRun: "chatInputBuy"
+                },
+                {
+                    name: "purchased-items",
+                    chatInputRun: "chatInputPurchasedItems"
                 }
             ]
         })
@@ -75,6 +79,11 @@ class ShopCommand extends Subcommand {
                     .setDescription("The name of the item to buy")
                     .setRequired(true)
                 })
+            })
+            .addSubcommand((command) => {
+                return command
+                .setName("purchased-items")
+                .setDescription("View all items you've purchased")
             });
         })
     }
@@ -135,6 +144,26 @@ class ShopCommand extends Subcommand {
             await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
             await logError(interaction, err);
         }
+    }
+
+    async chatInputPurchasedItems(interaction){
+        const items = await getItemsPurchasedByUser(interaction.user.id).then((items) => {
+            return items.map(({item}) => {
+                return item
+            })
+        });
+
+        const embed = new EmbedBuilder()
+        .setTitle("All purchased items")
+        .setAuthor({name: interaction.user.globalName})
+        .setColor("Green")
+        .addFields(
+            ...items.map((item) => {
+                return {name: item.name, value: item.description ?? " "}
+            })
+        )
+
+        await interaction.reply({embeds: [embed]})
     }
 }
 

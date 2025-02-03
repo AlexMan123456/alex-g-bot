@@ -57,4 +57,13 @@ function addItemToUser(user_id, item_id){
     })
 }
 
-module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem, deleteItem, addItemToUser };
+function getItemsPurchasedByUser(user_id){
+    return database.usersAndItems.findMany({
+        where: {user_id},
+        include: {item: true}
+    }).then((items) => {
+        return items
+    })
+}
+
+module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem, deleteItem, addItemToUser, getItemsPurchasedByUser };
