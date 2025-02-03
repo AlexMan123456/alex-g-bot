@@ -22,7 +22,8 @@ class EconCommand extends Subcommand {
                 },
                 {
                     name: "balance",
-                    chatInputRun: "chatInputBalance"
+                    chatInputRun: "chatInputBalance",
+                    default: true
                 },
                 {
                     name: "daily-bonus",
