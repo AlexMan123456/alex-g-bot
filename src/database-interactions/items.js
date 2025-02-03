@@ -43,4 +43,18 @@ function patchItem(item_id, data){
     })
 }
 
-module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem };
+function deleteItem(item_id){
+    return database.items.delete({
+        where: {item_id}
+    })
+}
+
+function addItemToUser(user_id, item_id){
+    return database.usersAndItems.create({
+        data: {user_id, item_id}
+    }).then((relation) => {
+        return relation
+    })
+}
+
+module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem, deleteItem, addItemToUser };

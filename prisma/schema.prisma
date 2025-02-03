@@ -12,9 +12,9 @@ model User {
   username    String           @db.VarChar(100)
   global_name String           @db.VarChar(100)
   bot_user    Boolean
-  items       UsersAndItems[]
   suggestions Suggestion[]
   guilds      UsersAndGuilds[]
+  items       UsersAndItems[]
 
   @@map("users")
 }
@@ -79,8 +79,8 @@ model Items {
   description String?
   stock       Int?
   price       Int
-  users       UsersAndItems[]
   guild       Guild           @relation(fields: [guild_id], references: [guild_id])
+  users       UsersAndItems[]
 
   @@map("items")
 }
@@ -92,6 +92,7 @@ model UsersAndItems {
   user    User   @relation(fields: [user_id], references: [user_id])
 
   @@id([user_id, item_id])
+  @@map("users_and_items")
 }
 
 enum SuggestionStatus {

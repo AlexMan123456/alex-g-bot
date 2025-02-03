@@ -51,4 +51,11 @@ function getUserById(user_id){
     })
 }
 
-module.exports = { postUser, getUserById }
+function patchUser(user_id, data){
+    return database.user.update({
+        where: {user_id},
+        data
+    })
+}
+
+module.exports = { postUser, getUserById, patchUser }

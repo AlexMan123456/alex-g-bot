@@ -3,6 +3,7 @@ const logError = require("../../utils/log-error");
 const { getItemsFromGuild, postItemToGuild, getItemsByName } = require("../../database-interactions/items");
 const { EmbedBuilder } = require("discord.js");
 const { getGuildById } = require("../../database-interactions/guilds");
+const giveItemToUser = require("../../miscellaneous/give-item-to-user");
 
 class ShopCommand extends Subcommand {
     constructor(context, options){
@@ -123,13 +124,17 @@ class ShopCommand extends Subcommand {
     }
 
     async chatInputBuy(interaction){
-        const itemName = interaction.options.getString("item");
+        try {
+            const itemName = interaction.options.getString("item");
+            const potentialItems = await getItemsByName(itemName);
 
-        const potentialItems = await getItemsByName(itemName);
-
-        /*if(potentialItems === 1){
-            
-        }*/
+            if(potentialItems.length === 1){
+                return await giveItemToUser(interaction, potentialItems[0]);
+            }
+        } catch(err) {
+            await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
+            await logError(interaction, err);
+        }
     }
 }
 
