@@ -1,6 +1,6 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const logError = require("../../utils/log-error");
-const { getItemsFromGuild, postItemToGuild } = require("../../database-interactions/items");
+const { getItemsFromGuild, postItemToGuild, getItemsByName } = require("../../database-interactions/items");
 const { EmbedBuilder } = require("discord.js");
 const { getGuildById } = require("../../database-interactions/guilds");
 
@@ -16,7 +16,12 @@ class ShopCommand extends Subcommand {
                 },
                 {
                     name: "add-item",
-                    chatInputRun: "chatInputAddItem"
+                    chatInputRun: "chatInputAddItem",
+                    preconditions: [["OwnerOnly", "ModOnly"]]
+                },
+                {
+                    name: "buy",
+                    chatInputRun: "chatInputBuy"
                 }
             ]
         })
@@ -57,6 +62,17 @@ class ShopCommand extends Subcommand {
                     return option
                     .setName("stock")
                     .setDescription("The amount in stock available (leave empty for infinite)")
+                })
+            })
+            .addSubcommand((command) => {
+                return command
+                .setName("buy")
+                .setDescription("Buy an item")
+                .addStringOption((option) => {
+                    return option
+                    .setName("item")
+                    .setDescription("The name of the item to buy")
+                    .setRequired(true)
                 })
             });
         })
@@ -104,6 +120,16 @@ class ShopCommand extends Subcommand {
             await interaction.reply({content: "Could not add item to shop. Please try again later.", ephemeral: true});
             await logError(interaction, err);
         }
+    }
+
+    async chatInputBuy(interaction){
+        const itemName = interaction.options.getString("item");
+
+        const potentialItems = await getItemsByName(itemName);
+
+        /*if(potentialItems === 1){
+            
+        }*/
     }
 }
 

@@ -10,7 +10,8 @@ class ModerationCommand extends Subcommand {
             subcommands: [
                 {
                     name: "kick",
-                    chatInputRun: "chatInputKick"
+                    chatInputRun: "chatInputKick",
+                    preconditions: [["OwnerOnly", "ModOnly"]]
                 }
             ]
         })

@@ -22,8 +22,25 @@ function postItemToGuild(guild_id, name, description, price, stock){
     }
 
     return database.items.create({data}).then((item) => {
+        return item;
+    })
+}
+
+function getItemsByName(name){
+    return database.items.findMany({
+        where: {name}
+    }).then((items) => {
+        return items;
+    })
+}
+
+function patchItem(item_id, data){
+    return database.items.update({
+        where: {item_id},
+        data
+    }).then((item) => {
         return item
     })
 }
 
-module.exports = { getItemsFromGuild, postItemToGuild }
+module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem };
