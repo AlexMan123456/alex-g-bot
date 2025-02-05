@@ -5,22 +5,29 @@ const logError = require("../utils/log-error");
 
 async function giveItemToUser(interaction, itemToBuy){
     const {money_current: previousCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id);
-    const reply = interaction.replied ? "editReply" : "reply";
-    console.log(itemToBuy)
     if(itemToBuy.price > previousCurrent){
         return await interaction.reply({content: "You do not have enough money to purchase this item.", ephemeral: true})
     }
+    
+    const newCurrent = previousCurrent - itemToBuy.price;
+    try {
+        await addItemToUser(interaction.user.id, itemToBuy.item_id);
+    } catch(err) {
+        if(err.code === "P2002"){
+            return await interaction.reply({content: "You already own this item!", ephemeral: true});
+        }
+        await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
+        await logError(interaction, err);
+    }
+    await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent});
 
     if(itemToBuy.stock > 0){
         const newStock = itemToBuy.stock - 1;
         await patchItem(itemToBuy.item_id, {stock: newStock});
-    } else if(itemToBuy.stock && itemToBuy.stock <= 0) {
+    } else if(itemToBuy.stock <= 0) {
         return await interaction.reply({content: "This item is out of stock.", ephemeral: true});
     }
     
-    const newCurrent = previousCurrent - itemToBuy.price;
-    await addItemToUser(interaction.user.id, itemToBuy.item_id);
-    await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent});
 
     const embed = new EmbedBuilder()
     .setTitle("Item purchased")
