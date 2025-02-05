@@ -24,9 +24,9 @@ class QuizButtonsHandler extends InteractionHandler {
     async run(interaction){
         const isChoiceCorrect = interaction.customId.split("-").includes("correct") ? true : false
         const question = interaction.message.embeds[0].data.title
-        const chosenOption = this.getChosenOption(interaction)
-        const correctOption = this.getCorrectOption(interaction)
-        const remainingOptions = this.getRemainingOptions(interaction)
+        const chosenOption = this.#getChosenOption(interaction)
+        const correctOption = this.#getCorrectOption(interaction)
+        const remainingOptions = this.#getRemainingOptions(interaction)
 
         try {
             const embedFields = [{name: "Correct answer", value: `**${correctOption.name}**. ${correctOption.value}`}]
@@ -34,7 +34,7 @@ class QuizButtonsHandler extends InteractionHandler {
                 embedFields.push({name: "You chose", value: `**${chosenOption.name}**. ${chosenOption.value}`})
             } else {
                 // Figure out the amount earned based on difficulty
-                const amountEarned = this.getAmountEarned(interaction.message.embeds[0].footer.text.split(" ")[1])
+                const amountEarned = this.#getAmountEarned(interaction.message.embeds[0].footer.text.split(" ")[1])
 
                 // Update the money in user's current account by the amount earned
                 const {money_current: previousAmount} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
@@ -67,13 +67,13 @@ class QuizButtonsHandler extends InteractionHandler {
         }
     }
 
-    getChosenOption(interaction){
+    #getChosenOption(interaction){
         return interaction.message.embeds[0].data.fields.find((option) => {
             return option.name === interaction.customId.split("-")[2]
         })
     }
 
-    getCorrectOption(interaction){
+    #getCorrectOption(interaction){
         const {data: correctButton} = interaction.message.components[0].components.find((option) => {
             return option.customId.split("-").includes("correct")
         })
@@ -82,10 +82,10 @@ class QuizButtonsHandler extends InteractionHandler {
         })
     }
 
-    getRemainingOptions(interaction){
+    #getRemainingOptions(interaction){
         const allOptions = [...interaction.message.embeds[0].data.fields]
-        const correctOption = this.getCorrectOption(interaction)
-        const chosenOption = this.getChosenOption(interaction)
+        const correctOption = this.#getCorrectOption(interaction)
+        const chosenOption = this.#getChosenOption(interaction)
 
         allOptions.splice(allOptions.indexOf(correctOption),1)
         if(chosenOption.name !== correctOption.name){
@@ -94,7 +94,7 @@ class QuizButtonsHandler extends InteractionHandler {
         return allOptions
     }
 
-    getAmountEarned(difficulty){
+    #getAmountEarned(difficulty){
         if(difficulty === "easy"){
             return getRandomNumber(1, 200)
         } 
