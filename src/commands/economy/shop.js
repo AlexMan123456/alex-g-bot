@@ -156,7 +156,7 @@ class ShopCommand extends Subcommand {
             const buttons = new ActionRowBuilder().addComponents(
                 ...potentialItems.map((item, index) => {
                     return new ButtonBuilder()
-                    .setCustomId(`buy-item-${index}-button`)
+                    .setCustomId(`buy-item-${item.item_id}-button`)
                     .setLabel(`${index+1}`)
                     .setStyle(ButtonStyle.Primary);
                 })

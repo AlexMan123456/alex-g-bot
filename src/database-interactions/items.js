@@ -49,6 +49,12 @@ function deleteItem(item_id){
     })
 }
 
+function getItemById(item_id){
+    return database.items.findUnique({
+        where: {item_id}
+    })
+}
+
 function addItemToUser(user_id, item_id){
     return database.usersAndItems.create({
         data: {user_id, item_id}
@@ -66,4 +72,4 @@ function getItemsPurchasedByUser(user_id){
     })
 }
 
-module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem, deleteItem, addItemToUser, getItemsPurchasedByUser };
+module.exports = { getItemsFromGuild, postItemToGuild, getItemsByName, patchItem, deleteItem, addItemToUser, getItemsPurchasedByUser, getItemById };
