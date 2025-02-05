@@ -24,7 +24,7 @@ async function giveItemToUser(interaction, itemToBuy){
     if(itemToBuy.stock > 0){
         const newStock = itemToBuy.stock - 1;
         await patchItem(itemToBuy.item_id, {stock: newStock});
-    } else if(itemToBuy.stock <= 0) {
+    } else if(itemToBuy.stock <= 0 && itemToBuy.stock !== null) {
         return await interaction.reply({content: "This item is out of stock.", ephemeral: true});
     }
     
