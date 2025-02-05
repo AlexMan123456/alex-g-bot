@@ -1,7 +1,7 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const logError = require("../../utils/log-error");
 const { getItemsFromGuild, postItemToGuild, getItemsByName, getItemsPurchasedByUser } = require("../../database-interactions/items");
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { getGuildById } = require("../../database-interactions/guilds");
 const giveItemToUser = require("../../miscellaneous/give-item-to-user");
 
@@ -98,7 +98,7 @@ class ShopCommand extends Subcommand {
             .setColor("Blue")
             .addFields(
                 ...items.map((item) => {
-                    return {name: `${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock ? `\n**Stock:** ${item.stock}` : "")}
+                    return {name: `${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock !== null ? `\n**Stock:** ${item.stock}` : "")}
                 })
             )
             
@@ -123,7 +123,7 @@ class ShopCommand extends Subcommand {
             .setTitle("Item posted")
             .setAuthor({name: interaction.user.globalName})
             .setColor("Green")
-            .addFields({name: `${postedItem.name}: ${currency_symbol}${postedItem.price}`, value: (postedItem.description ?? " ") + (postedItem.stock ? `\n**Stock:** ${postedItem.stock}` : "")})
+            .addFields({name: `${postedItem.name}: ${currency_symbol}${postedItem.price}`, value: (postedItem.description ?? " ") + (postedItem.stock !== null ? `\n**Stock:** ${postedItem.stock}` : "")})
 
             await interaction.reply({embeds: [embed]});
         } catch(err) {
@@ -140,6 +140,29 @@ class ShopCommand extends Subcommand {
             if(potentialItems.length === 1){
                 return await giveItemToUser(interaction, potentialItems[0]);
             }
+
+            const {currency_symbol} = await getGuildById(interaction.guild.id)
+
+            const embed = new EmbedBuilder()
+            .setTitle("There is more than one item with this name")
+            .setDescription("Please choose which item more specifically you would like to purchase.")
+            .setColor("Orange")
+            .addFields(
+                ...potentialItems.map((item, index) => {
+                    return {name: `${index+1}. ${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock !== null ? `\n**Stock:** ${item.stock}` : "")}
+                })
+            )
+
+            const buttons = new ActionRowBuilder().addComponents(
+                ...potentialItems.map((item, index) => {
+                    return new ButtonBuilder()
+                    .setCustomId(`buy-item-${index}-button`)
+                    .setLabel(`${index+1}`)
+                    .setStyle(ButtonStyle.Primary);
+                })
+            )
+
+            await interaction.reply({embeds: [embed], components: [buttons]});
         } catch(err) {
             await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
             await logError(interaction, err);
