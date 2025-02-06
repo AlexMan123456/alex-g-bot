@@ -12,7 +12,6 @@ class ItemPurchaseHandler extends InteractionHandler {
     }
 
     parse(interaction){
-        console.log(interaction);
         if(interaction.customId === "shop-select-menu"){
             return this.some()
         }
