@@ -1,7 +1,7 @@
 const { Subcommand } = require("@sapphire/plugin-subcommands");
 const logError = require("../../utils/log-error");
 const { getItemsFromGuild, postItemToGuild, getItemsByName, getItemsPurchasedByUser } = require("../../database-interactions/items");
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require("discord.js");
 const { getGuildById } = require("../../database-interactions/guilds");
 const giveItemToUser = require("../../miscellaneous/give-item-to-user");
 
@@ -11,22 +11,17 @@ class ShopCommand extends Subcommand {
             ...options,
             subcommands: [
                 {
-                    name: "items",
-                    chatInputRun: "chatInputItems",
-                    default: true
-                },
-                {
                     name: "add-item",
                     chatInputRun: "chatInputAddItem",
                     preconditions: [["OwnerOnly", "ModOnly"]]
                 },
                 {
-                    name: "buy",
-                    chatInputRun: "chatInputBuy"
-                },
-                {
                     name: "purchased-items",
                     chatInputRun: "chatInputPurchasedItems"
+                },
+                {
+                    name: "buy",
+                    chatInputRun: "chatInputSelectItems"
                 }
             ]
         })
@@ -37,11 +32,6 @@ class ShopCommand extends Subcommand {
             return builder
             .setName("shop")
             .setDescription("Put the in-server money you've earned to use")
-            .addSubcommand((command) => {
-                return command
-                .setName("items")
-                .setDescription("View all items")
-            })
             .addSubcommand((command) => {
                 return command
                 .setName("add-item")
@@ -71,42 +61,15 @@ class ShopCommand extends Subcommand {
             })
             .addSubcommand((command) => {
                 return command
-                .setName("buy")
-                .setDescription("Buy an item")
-                .addStringOption((option) => {
-                    return option
-                    .setName("item")
-                    .setDescription("The name of the item to buy")
-                    .setRequired(true)
-                })
+                .setName("purchased-items")
+                .setDescription("View all items you've purchased")
             })
             .addSubcommand((command) => {
                 return command
-                .setName("purchased-items")
-                .setDescription("View all items you've purchased")
+                .setName("buy")
+                .setDescription("Select an item to buy")
             });
         })
-    }
-
-    async chatInputItems(interaction){
-        try {
-            const items = await getItemsFromGuild(interaction.guild.id);
-            const {currency_symbol} = await getGuildById(interaction.guild.id);
-            
-            const embed = new EmbedBuilder()
-            .setTitle("Items")
-            .setColor("Blue")
-            .addFields(
-                ...items.map((item) => {
-                    return {name: `${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock !== null ? `\n**Stock:** ${item.stock}` : "")}
-                })
-            )
-            
-            await interaction.reply({embeds: [embed]})
-        } catch(err) {
-            await interaction.reply({content: "Could not get items. Please try again later.", ephemeral: true});
-            await logError(interaction, err);
-        }
     }
 
     async chatInputAddItem(interaction){
@@ -132,43 +95,6 @@ class ShopCommand extends Subcommand {
         }
     }
 
-    async chatInputBuy(interaction){
-        try {
-            const itemName = interaction.options.getString("item");
-            const potentialItems = await getItemsByName(itemName);
-
-            if(potentialItems.length === 1){
-                return await giveItemToUser(interaction, potentialItems[0]);
-            }
-
-            const {currency_symbol} = await getGuildById(interaction.guild.id)
-
-            const embed = new EmbedBuilder()
-            .setTitle("There is more than one item with this name")
-            .setDescription("Please choose which item more specifically you would like to purchase.")
-            .setColor("Orange")
-            .addFields(
-                ...potentialItems.map((item, index) => {
-                    return {name: `${index+1}. ${item.name}: ${currency_symbol}${item.price}`, value: (item.description ?? " ") + (item.stock !== null ? `\n**Stock:** ${item.stock}` : "")}
-                })
-            )
-
-            const buttons = new ActionRowBuilder().addComponents(
-                ...potentialItems.map((item, index) => {
-                    return new ButtonBuilder()
-                    .setCustomId(`buy-item-${item.item_id}-button`)
-                    .setLabel(`${index+1}`)
-                    .setStyle(ButtonStyle.Primary);
-                })
-            )
-
-            await interaction.reply({embeds: [embed], components: [buttons]});
-        } catch(err) {
-            await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
-            await logError(interaction, err);
-        }
-    }
-
     async chatInputPurchasedItems(interaction){
         const items = await getItemsPurchasedByUser(interaction.user.id).then((items) => {
             return items.map(({item}) => {
@@ -187,6 +113,34 @@ class ShopCommand extends Subcommand {
         )
 
         await interaction.reply({embeds: [embed]})
+    }
+
+    async chatInputSelectItems(interaction){
+        const items = await getItemsFromGuild(interaction.guild.id);
+
+        if(items.length === 0){
+            return await interaction.reply("There are no items for sale yet!");
+        }
+
+        const {currency_symbol} = await getGuildById(interaction.guild.id);
+
+        const select = new StringSelectMenuBuilder()
+        .setCustomId("shop-select-menu")
+        .setPlaceholder("Select an item to buy.")
+        .addOptions(
+            ...items.filter((item) => {
+                return item.stock === null || item.stock > 0;
+            }).map((item) => {
+                return new StringSelectMenuOptionBuilder()
+                .setLabel(`${item.name}: ${currency_symbol}${item.price}`)
+                .setDescription((item.description ?? "") + " " + (item.stock !== null ? `[Stock: ${item.stock}]` : ""))
+                .setValue(`item-${item.item_id}`)
+            })
+        )
+
+        const components = new ActionRowBuilder().addComponents(select);
+
+        await interaction.reply({content: "Select an item to buy.", components: [components]});
     }
 }
 

@@ -7,12 +7,13 @@ class ItemPurchaseHandler extends InteractionHandler {
     constructor(context, options){
         super(context, {
             ...options,
-            interactionHandlerType: InteractionHandlerTypes.Button
+            interactionHandlerType: InteractionHandlerTypes.SelectMenu
         })
     }
 
     parse(interaction){
-        if(interaction.customId.includes("buy-item") && interaction.customId.includes("button")){
+        console.log(interaction);
+        if(interaction.customId === "shop-select-menu"){
             return this.some()
         }
         return this.none()
@@ -23,7 +24,7 @@ class ItemPurchaseHandler extends InteractionHandler {
             if(interaction.user.id !== interaction.message.interaction.user.id){
                 return await interaction.reply({content: "Only the user who initially ran the command can complete this purchase.", ephemeral: true});
             }
-            const item = await getItemById(parseInt(interaction.customId.split("-")[2]));
+            const item = await getItemById(parseInt(interaction.values[0].split("-")[1]));
             await giveItemToUser(interaction, item);
         } catch(err) {
             await interaction.reply({content: "Could not complete purchase. Please try again later.", ephemeral: true});
