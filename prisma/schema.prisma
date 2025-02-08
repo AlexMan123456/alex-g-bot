@@ -12,6 +12,7 @@ model User {
   username    String           @db.VarChar(100)
   global_name String           @db.VarChar(100)
   bot_user    Boolean
+  punishments Punishments[]
   suggestions Suggestion[]
   guilds      UsersAndGuilds[]
   items       UsersAndItems[]
@@ -42,6 +43,7 @@ model Guild {
   error_log_id           String?
   currency_symbol        String           @default("£")
   items                  Items[]
+  punishments            Punishments[]
   users                  UsersAndGuilds[]
 
   @@map("guilds")
@@ -93,6 +95,24 @@ model UsersAndItems {
 
   @@id([user_id, item_id])
   @@map("users_and_items")
+}
+
+model Punishments {
+  punishment_id Int            @id @default(autoincrement())
+  type          PunishmentType
+  user_id       String
+  guild_id      String
+  reason        String?
+  guild         Guild          @relation(fields: [guild_id], references: [guild_id])
+  user          User           @relation(fields: [user_id], references: [user_id])
+
+  @@map("punishments")
+}
+
+enum PunishmentType {
+  warn
+  kick
+  ban
 }
 
 enum SuggestionStatus {
