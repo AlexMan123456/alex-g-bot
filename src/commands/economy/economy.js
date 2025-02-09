@@ -134,13 +134,14 @@ class EconCommand extends Subcommand {
         try {
             const {money_current: previousCurrent, money_savings: previousSavings} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
             const depositAmount = interaction.options.getNumber("money") ?? previousCurrent
+            
+            if(depositAmount > previousCurrent){
+                return await interaction.reply("Cannot deposit more money than you currently have.")
+            }
 
             const newCurrent = previousCurrent - depositAmount
             const newSavings = previousSavings + depositAmount
 
-            if(newCurrent < 0 || newSavings < 0){
-                return await interaction.reply("Cannot deposit more money than you currently have.")
-            }
 
             await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {money_current: newCurrent, money_savings: newSavings})
             const {currency_symbol} = await getGuildById(interaction.guild.id)
@@ -165,6 +166,10 @@ class EconCommand extends Subcommand {
         try {
             const {money_current: previousCurrent, money_savings: previousSavings} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id)
             const withdrawAmount = interaction.options.getNumber("money") ?? previousSavings
+
+            if(withdrawAmount > previousSavings){
+                return await interaction.reply({content: "Can't withdraw more money than you currently have."})
+            }
 
             const newCurrent = previousCurrent + withdrawAmount
             const newSavings = previousSavings - withdrawAmount

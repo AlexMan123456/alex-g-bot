@@ -1,10 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const { InteractionHandler, InteractionHandlerTypes } = require("@sapphire/framework");
-const getRandomNumber = require("../utils/get-random-number");
-const makeFirstLetterUppercase = require("../utils/make-first-letter-uppercase");
-const { getUserById } = require("../database-interactions/users");
-const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../database-interactions/users-and-guilds");
-const { getGuildById } = require("../database-interactions/guilds");
+const getRandomNumber = require("../../utils/get-random-number");
+const makeFirstLetterUppercase = require("../../utils/make-first-letter-uppercase");
+const { getUserAndGuildRelation, patchUserAndGuildRelation } = require("../../database-interactions/users-and-guilds");
+const { getGuildById } = require("../../database-interactions/guilds");
 
 class HeadsOrTailsHandler extends InteractionHandler {
     constructor(context, options){
@@ -57,8 +56,7 @@ class HeadsOrTailsHandler extends InteractionHandler {
             )
         .setColor("Green")
 
-        await interaction.message.edit({content: "Game complete! See results below.", embeds: [], components: []})
-        await interaction.reply({embeds: [embed]})
+        await interaction.message.edit({content: "", embeds: [embed], components: []});
     }
 
     #getWinner(interaction, userWhoChoseFirst, userWhoChoseSecond){
