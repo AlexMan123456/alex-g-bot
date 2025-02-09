@@ -40,8 +40,8 @@ class AcceptHeadsOrTailsHandler extends InteractionHandler {
                 .setStyle(ButtonStyle.Primary)
         )
 
-        await interaction.message.edit({content: "", embeds: [embed], components: [buttons]});
-        await interaction.reply({content: "This needs to be here because all interactions need to be replied to, and not having this will cause the interaction to fail. Please ignore this.", ephemeral: true});
+        await interaction.update({content: "", embeds: [embed], components: [buttons]});
+        /*await interaction.reply({content: "This needs to be here because all interactions need to be replied to, and not having this will cause the interaction to fail. Please ignore this.", ephemeral: true});*/
     }
 }
 
