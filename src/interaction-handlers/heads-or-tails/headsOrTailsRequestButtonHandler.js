@@ -21,7 +21,7 @@ class AcceptHeadsOrTailsHandler extends InteractionHandler {
         const userBeingChallenged = await this.container.client.users.fetch(interaction.customId.split("-")[8]);
 
         if(interaction.user.id !== userBeingChallenged.id){
-            return await interaction.reply({content: `Stay out of this! Let ${userBeingChallenged.globalName} make a decision themselves.`})
+            return await interaction.reply({content: `Stay out of this! Let ${userBeingChallenged.globalName} make a decision themselves.`, ephemeral: true})
         }
 
         if(interaction.customId.includes("heads-or-tails-challenge-deny")){
