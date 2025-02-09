@@ -49,10 +49,10 @@ class HeadsOrTailsHandler extends InteractionHandler {
         const {currency_symbol} = await getGuildById(interaction.guild.id)
 
         const embed = new EmbedBuilder()
-        .setTitle(`${makeFirstLetterUppercase(result)}! ${winner.globalName} wins!`)
+        .setTitle(`${makeFirstLetterUppercase(result)}! ${winner.globalName} wins ${currency_symbol}${amountToPay}.`)
         .addFields(
-            {name: `${winner.globalName}: Current`, value: `${currency_symbol}${winnerPreviousCurrent} → ${currency_symbol}${winnerNewCurrent}`},
-            {name: `${loser.globalName}: Current`, value: `${currency_symbol}${loserPreviousCurrent} → ${currency_symbol}${loserNewCurrent}`}
+            {name: `${winner.globalName} (chose ${result}): Current`, value: `${currency_symbol}${winnerPreviousCurrent} → ${currency_symbol}${winnerNewCurrent}`},
+            {name: `${loser.globalName} (chose ${result === "heads" ? "tails" : "heads"}): Current`, value: `${currency_symbol}${loserPreviousCurrent} → ${currency_symbol}${loserNewCurrent}`}
             )
         .setColor("Green")
 
