@@ -34,11 +34,11 @@ class HeadsOrTailsCommand extends Command {
 
         const buttons = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
-                .setCustomId("heads-button")
+                .setCustomId(`heads-button-challenged-user-id-${userBeingChallenged.id}`)
                 .setLabel("Heads")
                 .setStyle(ButtonStyle.Primary),
             new ButtonBuilder()
-                .setCustomId("tails-button")
+                .setCustomId(`tails-button-challenged-user-id-${userBeingChallenged.id}`)
                 .setLabel("Tails")
                 .setStyle(ButtonStyle.Primary)
         )
