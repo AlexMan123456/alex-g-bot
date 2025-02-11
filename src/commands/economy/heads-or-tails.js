@@ -58,26 +58,6 @@ class HeadsOrTailsCommand extends Command {
         )
 
         await interaction.reply({content: `<@${userBeingChallenged.id}>`, embeds: [embed], components: [buttons]});
-
-        /*
-        const embed = new EmbedBuilder()
-        .setTitle(`${interaction.user.globalName} vs ${userBeingChallenged.globalName}`)
-        .setDescription("Pick a side: Heads or tails?")
-        .setColor("Green")
-
-        const buttons = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId(`heads-button-challenged-user-id-${userBeingChallenged.id}`)
-                .setLabel("Heads")
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId(`tails-button-challenged-user-id-${userBeingChallenged.id}`)
-                .setLabel("Tails")
-                .setStyle(ButtonStyle.Primary)
-        )
-
-        await interaction.reply({embeds: [embed], components: [buttons]})
-        */
     }
 }
 
