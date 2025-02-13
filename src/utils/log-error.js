@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js")
-const findChannel = require("./find-channel")
 const { getGuildById } = require("../database-interactions/guilds")
+const { container } = require("@sapphire/framework")
+const util = require("util")
 
 function logError(client, error){
     return getGuildById(client.guild.id).then((guild) => {
@@ -8,7 +9,7 @@ function logError(client, error){
     }).then((errorChannel) => {
         const errorMessage = new EmbedBuilder()
         .setTitle("An error has occured")
-        .setDescription(`${error}`)
+        .setDescription(util.inspect(error, { depth: 5 }))
         .setColor("Red")
 
         errorChannel.send({embeds: [errorMessage]})
