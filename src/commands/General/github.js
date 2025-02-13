@@ -51,26 +51,13 @@ class GitHubCommand extends Subcommand {
     }
 
     async chatInputCommits(interaction){
-        /*const {data: commits} = await axios.get("https://api.github.com/repos/AlexMan123456/alex-g-bot/commits")
-
-        const embed = new EmbedBuilder()
-        .setTitle("Commit history")
-        .setAuthor({name: interaction.user.globalName})
-        .addFields(
-            ...commits.slice(0,10).map(({commit}) => {
-                const {date, time} = formatDateAndTime(commit.author.date)
-                return {name: `Created by ${commit.author.name} at ${date}, ${time}`, value: commit.message}
-            })
-        )
-
-        await interaction.reply({embeds: [embed]})*/
-
         const commits = execSync(`git log --pretty=format:"**%h**: %s" -10`).toString()
 
         const embed = new EmbedBuilder()
         .setTitle("Commit history")
         .setAuthor({name: interaction.user.globalName})
         .setDescription(commits)
+        .setColor("Green")
 
         await interaction.reply({embeds: [embed]})
     }
