@@ -1,8 +1,8 @@
-const { EmbedBuilder } = require("@discordjs/builders")
 const { Command } = require("@sapphire/framework")
 const { getUserById, postUser } = require("../../database-interactions/users.js")
 const formatDateAndTime = require("../../utils/format-date-and-time.js")
 const logError = require("../../utils/log-error.js")
+const { EmbedBuilder } = require("discord.js")
 
 class UserCommand extends Command {
     constructor(context, options){
@@ -21,23 +21,20 @@ class UserCommand extends Command {
     }
 
     async chatInputRun(interaction){
-        const userFromGuild = interaction.options.getUser("user") ?? interaction.user
+        const user = interaction.options.getUser("user") ?? interaction.user
         const member = interaction.options.getMember("user") ?? interaction.member
 
         try {
-            const user = await getUserById(userFromGuild.id) ?? await postUser(userFromGuild, interaction.guild, member.joinedAt)
-            const currentGuild = user.guilds.find(({guild}) => {
-                return guild.guild_id === interaction.guild.id
-            })
-            const {date: joinDate, time: joinTime} = formatDateAndTime(currentGuild.joined_at.toISOString())
+            const {date: joinDate, time: joinTime} = formatDateAndTime(new Date(member.joinedTimestamp).toISOString())
 
             const embed = new EmbedBuilder()
-            .setTitle(user.global_name)
+            .setTitle(user.globalName)
             .setAuthor({name: interaction.user.username})
             .setThumbnail(member.displayAvatarURL())
+            .setColor("Green")
             .addFields(
                 {name: "Username:", value: user.username},
-                {name: "Bot user:", value: user.bot_user ? "Yes" : "No"},
+                {name: "Bot user:", value: user.bot ? "Yes" : "No"},
                 {name: "Joined server on:", value: `${joinDate}, ${joinTime}`},
             )
 
