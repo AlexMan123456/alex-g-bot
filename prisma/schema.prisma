@@ -12,6 +12,7 @@ model User {
   username    String           @db.VarChar(100)
   global_name String           @db.VarChar(100)
   bot_user    Boolean
+  date_of_birth DateTime?
   punishments Punishments[]
   suggestions Suggestion[]
   guilds      UsersAndGuilds[]
