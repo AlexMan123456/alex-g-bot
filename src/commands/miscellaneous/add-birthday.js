@@ -33,19 +33,19 @@ class BirthdayCommand extends Command {
 
         try {
             if(month > 12 || month < 1){
-                return await interaction.reply({message: "Month must be between 1 and 12.", ephemeral: true})
+                return await interaction.reply({content: "Month must be between 1 and 12.", ephemeral: true})
             }
             if(day < 1){
-                return await interaction.reply({message: "Date cannot be non-positive", ephemeral: true})
+                return await interaction.reply({content: "Date cannot be non-positive", ephemeral: true})
             }
             if(day > 30 && [4, 6, 9, 11].includes(month)){
-                return await interaction.reply({message: `Day out of bounds for a birthday in ${this.#getMonthByNumber(month)}`, ephemeral: true});
+                return await interaction.reply({content: `Day out of bounds for a birthday in ${this.#getMonthByNumber(month)}`, ephemeral: true});
             }
             if(day > 29 && month === 2){
-                return await interaction.reply({message: "Day out of bounds for a birthday in February", ephemeral: true})
+                return await interaction.reply({content: "Day out of bounds for a birthday in February", ephemeral: true})
             }
             if(day > 31 && [1, 3, 5, 7, 8, 10, 12].includes(month)){
-                return await interaction.reply({message: `Date out of bounds for a birthday in ${this.#getMonthByNumber(month)}`, ephemeral: true})
+                return await interaction.reply({content: `Date out of bounds for a birthday in ${this.#getMonthByNumber(month)}`, ephemeral: true})
             }
 
             const birthday = new Date();
@@ -58,7 +58,7 @@ class BirthdayCommand extends Command {
 
             await interaction.reply(`Date of birth for <@${interaction.user.id}> set to ${this.#getMonthByNumber(date_of_birth.getMonth()+1)} ${date_of_birth.getDate()}`)
         } catch(error) {
-            await interaction.reply({message: "Error setting your birthday. Please try again later.", ephemeral: true})
+            await interaction.reply({content: "Error setting your birthday. Please try again later.", ephemeral: true})
             await logError(interaction, error)
         }
     }
