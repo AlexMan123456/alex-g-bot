@@ -6,6 +6,7 @@ const getRandomNumber = require("../../utils/get-random-number");
 const { patchGuild, getGuildById } = require("../../database-interactions/guilds");
 const { postCommandCooldown } = require("../../database-interactions/command-cooldowns");
 const formatDateAndTime = require("../../utils/format-date-and-time");
+const { getUserById } = require("../../database-interactions/users");
 
 class EconCommand extends Subcommand {
     constructor(context, options){
@@ -43,6 +44,10 @@ class EconCommand extends Subcommand {
                 {
                     name: "pay-user",
                     chatInputRun: "chatInputPay"
+                },
+                {
+                    name: "birthday-bonus",
+                    chatInputRun: "chatInputBirthdayBonus"
                 }
             ]
         })
@@ -126,6 +131,11 @@ class EconCommand extends Subcommand {
                     .setDescription("The amount to pay the given user")
                     .setRequired(true)
                 })
+            })
+            .addSubcommand((command) => {
+                return command
+                .setName("birthday-bonus")
+                .setDescription("Claim your bonus if it's your birthday")
             })
         })
     }
@@ -349,6 +359,34 @@ class EconCommand extends Subcommand {
             await interaction.reply("Error making payment. Please try again later.")
             await logError(interaction, err)
         }
+    }
+
+    async chatInputBirthdayBonus(interaction){
+        try {
+            const {date_of_birth} = await getUserById(interaction.user.id);
+            if(date_of_birth?.getDate() === new Date().getDate() && date_of_birth?.getMonth() === new Date().getMonth()){
+                const {money_current: oldCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id);
+                const increment = getRandomNumber(500,1000);
+                const newCurrent = oldCurrent + increment;
+                await patchUserAndGuildRelation(interaction.user.id, interaction.guild.id, {
+                    money_current: newCurrent
+                })
+                const {currency_symbol} = await getGuildById(interaction.guild.id)
+                const embed = new EmbedBuilder()
+                .setTitle(`Happy birthday, ${interaction.user.globalName}`)
+                .setDescription(`Here's an extra ${currency_symbol}${increment} as a birthday present!`)
+                .addFields(
+                    {name: "Current", value: `${currency_symbol}${oldCurrent} → ${currency_symbol}${newCurrent}`}
+                )
+
+                await interaction.reply({embeds: [embed]})
+            }
+            await interaction.reply(`Don't be so greedy, <@${interaction.user.id}>! It's not your birthday yet - wait your turn!`)
+        } catch(error) {
+            await interaction.reply({content: "Error claiming birthday bonus. Please try again later.", ephemeral: true})
+            await logError(interaction, error)
+        }   
+
     }
 }
 
