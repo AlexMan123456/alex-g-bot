@@ -44,8 +44,10 @@ function postUser(user, guild, joined_at){
 
 function getUserById(user_id){
     return database.user.findUnique({
-        select: allAttributes,
-        where: {user_id}
+        where: {user_id},
+        include: {
+            suggestions: true
+        }
     }).then((user) => {
         return user
     })
