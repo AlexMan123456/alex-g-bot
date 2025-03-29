@@ -7,6 +7,8 @@ const { patchGuild, getGuildById } = require("../../database-interactions/guilds
 const { postCommandCooldown } = require("../../database-interactions/command-cooldowns");
 const formatDateAndTime = require("../../utils/format-date-and-time");
 const { getUserById } = require("../../database-interactions/users");
+const { stripIndents } = require("common-tags");
+const getMonthByNumber = require("../../utils/get-month-by-number");
 
 class EconCommand extends Subcommand {
     constructor(context, options){
@@ -364,6 +366,11 @@ class EconCommand extends Subcommand {
     async chatInputBirthdayBonus(interaction){
         try {
             const {date_of_birth} = await getUserById(interaction.user.id);
+
+            if(!date_of_birth){
+                return await interaction.reply({content: "No birthday set yet. Run `/add-birthday` to set your birthday.", ephemeral: true})
+            }
+
             if(date_of_birth?.getDate() === new Date().getDate() && date_of_birth?.getMonth() === new Date().getMonth()){
                 const {money_current: oldCurrent} = await getUserAndGuildRelation(interaction.user.id, interaction.guild.id);
                 const increment = getRandomNumber(500,1000);
@@ -378,15 +385,17 @@ class EconCommand extends Subcommand {
                 .addFields(
                     {name: "Current", value: `${currency_symbol}${oldCurrent} → ${currency_symbol}${newCurrent}`}
                 )
+                .setColor("Green")
 
-                await interaction.reply({embeds: [embed]})
+                return await interaction.reply({embeds: [embed]})
             }
-            await interaction.reply(`Don't be so greedy, <@${interaction.user.id}>! It's not your birthday yet - wait your turn!`)
+
+            await interaction.reply(stripIndents(`Don't be so greedy, <@${interaction.user.id}>! It's not your birthday yet - wait your turn!
+            Try again on ${getMonthByNumber(date_of_birth?.getMonth()+1)} ${date_of_birth?.getDate()}`))
         } catch(error) {
             await interaction.reply({content: "Error claiming birthday bonus. Please try again later.", ephemeral: true})
             await logError(interaction, error)
         }   
-
     }
 }
 
