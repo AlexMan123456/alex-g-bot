@@ -23,11 +23,16 @@ class BirthdayCommand extends Command {
 						.setDescription('The day of the month of your birthday')
 						.setRequired(true)
 						.setMinValue(1)
-						.setMaxValue(12)
-						.setChoices(...createMonthOptions());
+						.setMaxValue(12);
 				})
 				.addNumberOption((option) => {
-					return option.setName('month').setDescription('The month of your birthday').setRequired(true);
+					return option
+						.setName('month')
+						.setDescription('The month of your birthday')
+						.setRequired(true)
+						.setMinValue(1)
+						.setMaxValue(31)
+						.setChoices(...createMonthOptions());
 				});
 		});
 	}
@@ -36,7 +41,7 @@ class BirthdayCommand extends Command {
 		const month = interaction.options.getNumber('month');
 		const day = interaction.options.getNumber('day');
 
-		const user = getUserById(interaction.user.id);
+		const user = await getUserById(interaction.user.id);
 
 		if (isNullish(user.date_of_birth)) {
 			return await interaction.reply({ content: `Can not change birthday if one is already set`, ephemeral: true });

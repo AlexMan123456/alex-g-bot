@@ -49,7 +49,8 @@ class EconCommand extends Subcommand {
 				},
 				{
 					name: 'birthday-bonus',
-					chatInputRun: 'chatInputBirthdayBonus'
+					chatInputRun: 'chatInputBirthdayBonus',
+					preconditions: ['CommandCooldown']
 				}
 			]
 		});
