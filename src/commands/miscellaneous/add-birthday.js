@@ -23,7 +23,7 @@ class BirthdayCommand extends Command {
 						.setDescription('The day of the month of your birthday')
 						.setRequired(true)
 						.setMinValue(1)
-						.setMaxValue(12);
+						.setMaxValue(31);
 				})
 				.addNumberOption((option) => {
 					return option
@@ -31,7 +31,7 @@ class BirthdayCommand extends Command {
 						.setDescription('The month of your birthday')
 						.setRequired(true)
 						.setMinValue(1)
-						.setMaxValue(31)
+						.setMaxValue(12)
 						.setChoices(...createMonthOptions());
 				});
 		});
