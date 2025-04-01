@@ -27,7 +27,8 @@ class PingCommand extends Command {
 			.addFields(
 				{name: "Bot latency", value: `${Date.now() - message.createdTimestamp}ms`},
 				{name: "Uptime", value: `${uptime} ${uptime === 1 ? "minute" : "minutes"}`}
-			);
+			)
+			.setImage("https://www.icegif.com/wp-content/uploads/2023/01/icegif-162.gif");
 
 			await message.edit({embeds: [embed]});
 		} catch(err) {
